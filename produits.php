@@ -196,7 +196,7 @@ $result = $conn->query($sql);
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="id" id="editId">
+                    <input type="hidden" name="id_produit" id="editId">
                     <div class="mb-3">
                         <label for="editNom" class="form-label">Nom</label>
                         <input type="text" class="form-control" id="editNom" name="nom" required>
