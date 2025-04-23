@@ -11,6 +11,8 @@ $error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nom = $_POST["nom"];
     $description = $_POST["description"];
+    $quantite = $_POST["quantite"]; // 👈 Nouveau
+    $prix = $_POST["prix"];         // 👈 Nouveau
 
     if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
         $targetDir = "images/";
@@ -18,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $targetFile = $targetDir . time() . "_" . $imageName;
 
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-            $stmt = $conn->prepare("INSERT INTO produits (nom, description, image) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $nom, $description, $targetFile);
+            $stmt = $conn->prepare("INSERT INTO produits (nom, description, quantite, prix, image) VALUES (?, ?, ?, ?, ?)"); // 👈 Modifié
+            $stmt->bind_param("ssids", $nom, $description, $quantite, $prix, $targetFile); // 👈 Modifié
 
             if ($stmt->execute()) {
                 $success = "Produit ajouté avec succès.";
@@ -35,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -151,6 +154,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="description" class="form-label">Description</label>
             <textarea name="description" class="form-control" rows="3"></textarea>
         </div>
+
+        <div class="mb-3">
+            <label for="quantite" class="form-label">Quantité</label>
+            <input type="number" name="quantite" class="form-control" min="1" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="prix" class="form-label">Prix unitaire</label>
+            <input type="number" name="prix" step="0.01" class="form-control" required>
+        </div>
+
 
         <div class="mb-3">
             <label for="image" class="form-label">Image du produit</label>
