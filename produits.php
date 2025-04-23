@@ -63,7 +63,7 @@ $result = $conn->query($sql);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background-color: #f8f9fa;
         }
 
