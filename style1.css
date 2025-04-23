@@ -1,0 +1,163 @@
+:root {
+    --primary-color: #4a8c3a;
+    --secondary-color: #3a6b2d;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+  }
+
+  .navbar-brand {
+    font-weight: 700;
+    font-size: 1.8rem;
+  }
+
+  .hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+  }
+
+  .contact-box {
+    background-color: white;
+    padding: 30px;
+    margin-top: -50px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    animation: fadeIn 1s ease-out;
+  }
+
+  .contact-item {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+  }
+
+  .contact-item i {
+    color: var(--primary-color);
+    margin-right: 10px;
+  }
+
+  footer {
+    background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+    color: white;
+    padding: 40px 0 20px;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .navbar-nav .nav-link {
+    position: relative;
+    transition: color 0.3s;
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0;
+    height: 2px;
+    background-color: white;
+    transition: width 0.3s;
+}
+
+
+
+.navbar-nav .nav-link:hover::after {
+    width: 100%;
+}
+
+        .navbar-nav .nav-item {
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: slideIn 0.6s forwards;
+}
+
+.navbar-nav .nav-item:nth-child(1) { animation-delay: 0.2s; }
+.navbar-nav .nav-item:nth-child(2) { animation-delay: 0.4s; }
+.navbar-nav .nav-item:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+        .navbar-nav .nav-link {
+    position: relative;
+    transition: color 0.3s;
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0;
+    height: 2px;
+    background-color: white;
+    transition: width 0.3s;
+}
+
+.navbar-nav .nav-link:hover::after {
+    width: 100%;
+}
+
+                      /* Fade in de tout le formulaire */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-container {
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Slide-in effet pour chaque champ */
+input, button {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideUp 0.6s forwards;
+}
+
+input:nth-of-type(1) { animation-delay: 0.2s; }
+input:nth-of-type(2) { animation-delay: 0.4s; }
+button { animation-delay: 0.6s; }
+
+@keyframes slideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover animation sur le bouton */
+button:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Petit effet au survol des liens */
+.link a:hover {
+    text-decoration: underline;
+    transition: color 0.3s ease-in-out;
+}
+
+    
