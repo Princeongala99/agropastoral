@@ -8,7 +8,7 @@ if ($conn->connect_error) {
 // Suppression d'un produit
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    $sql = "DELETE FROM produits WHERE id = ?";
+    $sql = "DELETE FROM produits WHERE id_produit = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -18,7 +18,7 @@ if (isset($_GET['delete'])) {
 
 // Modification d'un produit
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit'])) {
-    $id = $_POST['id'];
+    $id = $_POST['id_produit'];
     $nom = $_POST['nom'];
     $description = $_POST['description'];
     $quantite = $_POST['quantite'];
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit'])) {
     if ($image) {
         $imagePath = 'uploads/' . time() . '_' . $image;
         move_uploaded_file($tmpImage, $imagePath);
-        $sql = "UPDATE produits SET nom = ?, description = ?, quantite = ?, prix = ?, image = ? WHERE id = ?";
+        $sql = "UPDATE produits SET nom = ?, description = ?, quantite = ?, prix = ?, image = ? WHERE id_produit = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssidsi", $nom, $description, $quantite, $prix, $imagePath, $id);
     } else {
