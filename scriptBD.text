@@ -1,0 +1,89 @@
+CREATE DATABASE IF NOT EXISTS agropastoral;
+USE agropastoral;
+
+-- UTILISATEUR
+CREATE TABLE utilisateur (
+    id_utilisateur INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    mot_de_passe_hash VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'vendeur', 'acheteur') NOT NULL,
+    telephone VARCHAR(20),
+    adresse TEXT,
+    date_inscription DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- PRODUITS
+CREATE TABLE produits (
+    id_produit INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    quantite INT NOT NULL,
+    prix DECIMAL(10,2) NOT NULL,
+    description TEXT,
+    image VARCHAR(255)
+);
+
+-- STOCK
+CREATE TABLE stock (
+    id_stock INT AUTO_INCREMENT PRIMARY KEY,
+    id_vendeur INT NOT NULL,
+    id_produit INT NOT NULL,
+    date_entree DATETIME DEFAULT CURRENT_TIMESTAMP,
+    stock_alert INT,
+    FOREIGN KEY (id_vendeur) REFERENCES utilisateur(id_utilisateur),
+    FOREIGN KEY (id_produit) REFERENCES produits(id_produit)
+);
+
+-- PANIER
+CREATE TABLE panier (
+    id_panier INT AUTO_INCREMENT PRIMARY KEY,
+    id_acheteur INT NOT NULL,
+    id_produit INT NOT NULL,
+    quantite INT NOT NULL,
+    date_ajout DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_acheteur) REFERENCES utilisateur(id_utilisateur),
+    FOREIGN KEY (id_produit) REFERENCES produits(id_produit)
+);
+
+-- COMMANDE
+CREATE TABLE commande (
+    id_commande INT AUTO_INCREMENT PRIMARY KEY,
+    id_acheteur INT NOT NULL,
+    date_commande DATETIME DEFAULT CURRENT_TIMESTAMP,
+    statut ENUM('en_attente', 'confirmée', 'livrée', 'annulée') DEFAULT 'en_attente',
+    FOREIGN KEY (id_acheteur) REFERENCES utilisateur(id_utilisateur)
+);
+
+-- DETAIL COMMANDE
+CREATE TABLE commande_detail (
+    id_detail INT AUTO_INCREMENT PRIMARY KEY,
+    id_produit INT NOT NULL,
+    id_commande INT NOT NULL,
+    quantite INT NOT NULL,
+    prix DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (id_produit) REFERENCES produits(id_produit),
+    FOREIGN KEY (id_commande) REFERENCES commande(id_commande)
+);
+
+-- MESSAGE
+CREATE TABLE message (
+    id_message INT AUTO_INCREMENT PRIMARY KEY,
+    expediteur_id INT NOT NULL,
+    destinataire_id INT NOT NULL,
+    contenu TEXT NOT NULL,
+    date_envoi DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (expediteur_id) REFERENCES utilisateur(id_utilisateur),
+    FOREIGN KEY (destinataire_id) REFERENCES utilisateur(id_utilisateur)
+);
+
+-- ABONNEMENT (réservé aux vendeurs)
+CREATE TABLE abonnement (
+    id_abonnement INT AUTO_INCREMENT PRIMARY KEY,
+    id_vendeur INT NOT NULL,
+    numero_transaction VARCHAR(100) NOT NULL,
+    montant DECIMAL(10,2) NOT NULL,
+    date_paiement DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_vendeur) REFERENCES utilisateur(id_utilisateur)
+    -- Option : Tu peux ajouter une contrainte de vérification si ton SGBD la supporte :
+    -- CHECK ((SELECT role FROM utilisateur WHERE id_utilisateur = id_vendeur) = 'vendeur')
+);
