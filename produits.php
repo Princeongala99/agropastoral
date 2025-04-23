@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit'])) {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssidsi", $nom, $description, $quantite, $prix, $imagePath, $id);
     } else {
-        $sql = "UPDATE produits SET nom = ?, description = ?, quantite = ?, prix = ? WHERE id = ?";
+        $sql = "UPDATE produits SET nom = ?, description = ?, quantite = ?, prix = ? WHERE id_produit = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssidi", $nom, $description, $quantite, $prix, $id);
     }
