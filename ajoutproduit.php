@@ -151,11 +151,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea name="description" class="form-control" rows="3"></textarea>
-        </div>
-
-        <div class="mb-3">
             <label for="quantite" class="form-label">Quantité</label>
             <input type="number" name="quantite" class="form-control" min="1" required>
         </div>
@@ -169,6 +164,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="mb-3">
             <label for="image" class="form-label">Image du produit</label>
             <input type="file" name="image" class="form-control" accept="image/*" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3"></textarea>
         </div>
 
         <button type="submit" class="btn btn-agro w-100">Ajouter le produit</button>
