@@ -11,8 +11,8 @@ $error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nom = $_POST["nom"];
     $description = $_POST["description"];
-    $quantite = $_POST["quantite"]; // 👈 Nouveau
-    $prix = $_POST["prix"];         // 👈 Nouveau
+    $quantite = $_POST["quantite"]; 
+    $prix = $_POST["prix"];         
 
     if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
         $targetDir = "images/";
@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
             $stmt = $conn->prepare("INSERT INTO produits (nom, description, quantite, prix, image) VALUES (?, ?, ?, ?, ?)"); // 👈 Modifié
-            $stmt->bind_param("ssids", $nom, $description, $quantite, $prix, $targetFile); // 👈 Modifié
+            $stmt->bind_param("ssids", $nom, $description, $quantite, $prix, $targetFile); 
 
             if ($stmt->execute()) {
                 $success = "Produit ajouté avec succès.";
@@ -136,7 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </nav>
 
 <div class="form-container">
-    <h2 class="text-center mb-4">➕ Ajouter un nouveau produit</h2>
+    <h3 class="text-center mb-4">➕ Ajouter un nouveau produit</h3>
 
     <?php if ($success): ?>
         <div class="alert alert-success fade-alert"><?php echo $success; ?></div>
