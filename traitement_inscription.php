@@ -8,20 +8,21 @@ $dbName = "agropastoral";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    if (isset($_POST['nom'], $_POST['email'], $_POST['password'], $_POST['role'], $_POST['tel'], $_POST['address']) &&
+    if (isset($_POST['nom'], $_POST['email'], $_POST['password'], $_POST['tel'], $_POST['address']) &&
         !empty(trim($_POST['nom'])) &&
         !empty(trim($_POST['email'])) &&
         !empty(trim($_POST['password'])) &&
-        !empty(trim($_POST['role'])) &&
         !empty(trim($_POST['tel'])) &&
         !empty(trim($_POST['address'])))
     {
         $nom = trim($_POST['nom']);
         $email = trim($_POST['email']);
         $password = trim($_POST['password']);
-        $role = trim($_POST['role']);
         $tel = trim($_POST['tel']);
         $address = trim($_POST['address']);
+
+        // Le rôle est défini automatiquement comme "acheteur"
+        $role = "acheteur";
         
         // Validation du mot de passe
         if (strlen($password) < 4) {
@@ -48,7 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
 
-        // Check connection
         if ($conn->connect_error) {
             error_log("Database Connection Error: " . $conn->connect_error);
             $_SESSION['error_message'] = "Erreur de connexion à la base de données. Veuillez réessayer plus tard.";
@@ -59,7 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn->set_charset("utf8mb4");
 
         $sql = "INSERT INTO utilisateur (nom, email, mot_de_passe_hash, role, telephone, adresse) VALUES (?, ?, ?, ?, ?, ?)";
-
         $stmt = $conn->prepare($sql);
         
         if ($stmt === false) {
@@ -73,15 +72,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("ssssss", $nom, $email, $hashed_password, $role, $tel, $address);
 
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Inscription réussie !";
-
-            // Redirection selon le rôle
-            if (strtolower($role) === 'vendeur') {
-                header("Location: abonnement.php");
-            } else {
-                header("Location: connexion.php");
-            }
-
+            $_SESSION['success_message'] = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
+            header("Location: connexion.php");
         } else {
             if ($conn->errno == 1062) {
                 $_SESSION['error_message'] = "Cette adresse email est déjà utilisée.";
@@ -106,4 +98,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: inscription.php");
     exit;
 }
-?>
