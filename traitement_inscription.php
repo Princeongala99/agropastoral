@@ -4,7 +4,7 @@ session_start();
 $dbHost = "localhost";
 $dbUser = "root";
 $dbPass = "";
-$dbName = "agropastoral";
+$dbName = "agropast";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Redirection selon le rôle
             if (strtolower($role) === 'vendeur') {
-                header("Location: abonnement.php");
+                header("Location: interfacevendeur.php");
             } else {
                 header("Location: connexion.php");
             }
