@@ -158,6 +158,15 @@ button:hover {
             border: 1px solid #ccc;
             font-size: 1em;
         }
+        select[id="role"]{
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+
+        }
 
         button {
             width: 100%;

@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "agropastoral");
+$conn = new mysqli("localhost", "root", "", "agropast");
 
 if ($conn->connect_error) {
     die("Connexion échouée : " . $conn->connect_error);
@@ -130,7 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="accueil.php">Accueil</a></li>
-                <li class="nav-item"><a class="nav-link" href="produits.php">Nos produits</a></li>
+                <li class="nav-item"><a class="nav-link" href="nosproduits.php">Nos produits</a></li>
                 <li class="nav-item"><a class="nav-link active" href="ajoutproduit.php">Ajouter un produit</a></li>
             </ul>
         </div>
@@ -148,8 +148,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <form action="" method="POST" enctype="multipart/form-data">
         <div class="mb-3">
-            <label for="nom" class="form-label">Nom du produit</label>
+            <label for="nom" class="form-label"> le Nom du produit</label>
             <input type="text" name="nom" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="quantite" class="form-label"> la Quantite du produit</label>
+            <input type="number" name="quantite" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="prix" class="form-label">le Prix du produit</label>
+            <input type="number" name="prix" class="form-control" required>
         </div>
 
         <div class="mb-3">
