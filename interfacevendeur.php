@@ -1,3 +1,77 @@
+<?php
+session_start();
+
+
+// Vérification de la connexion et du rôle
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'vendeur') {
+    header("Location: connexion.php");
+    exit();
+}
+if (!isset($_SESSION['abonnement_valide']) || $_SESSION['abonnement_valide'] !== true) {
+    header("Location: abonnement.php");
+    exit();
+}
+
+// Connexion à la base de données
+$conn = new mysqli("localhost", "root", "", "agropast");
+if ($conn->connect_error) {
+    die("Échec de connexion : " . $conn->connect_error);
+}
+
+// Traitement du formulaire d'ajout de produit
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajouter'])) {
+    $nom = $_POST['nom'];
+    $description = $_POST['description'];
+    $prix = $_POST['prix'];
+    $quantite = $_POST['quantite'];
+    $vendeur_id = $_SESSION['user_id'];
+
+    // Gestion de l'upload de l'image
+    $targetDir = "uploads/";
+    $imageName = basename($_FILES['image']['name']);
+    $targetFile = $targetDir . time() . "_" . $imageName;
+    
+    if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+        $sql = "INSERT INTO produits (nom, description, image, prix, quantite, vendeur_id) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssdii", $nom, $description, $targetFile, $prix, $quantite, $vendeur_id);
+        
+        if ($stmt->execute()) {
+            $success = "Produit ajouté avec succès!";
+        } else {
+            $error = "Erreur lors de l'ajout du produit.";
+        }
+        $stmt->close();
+    } else {
+        $error = "Erreur lors du téléchargement de l'image.";
+    }
+}
+
+// Récupération des produits du vendeur
+$sql = "SELECT * FROM produits WHERE vendeur_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $_SESSION['user_id']);
+$stmt->execute();
+$result = $stmt->get_result();
+$produits = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+// Récupération des statistiques du vendeur
+$sql_stats = "SELECT 
+                COUNT(*) as total_produits,
+                SUM(quantite) as total_stock,
+                SUM(prix * quantite) as valeur_stock
+              FROM produits 
+              WHERE vendeur_id = ?";
+$stmt_stats = $conn->prepare($sql_stats);
+$stmt_stats->bind_param("i", $_SESSION['user_id']);
+$stmt_stats->execute();
+$stats = $stmt_stats->get_result()->fetch_assoc();
+$stmt_stats->close();
+
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -92,10 +166,10 @@
                 <i class="fas fa-boxes me-2"></i>Mes Produits
             </a>
             <a href="ajoutproduit.php">
-                <i class="fas fa-plus-circle me-2"></i>Gerer Produit
+                <i class="fas fa-plus-circle me-2"></i>Ajouter Produit
             </a>
             <a href="commandes.php">
-                <i class="fas fa-shopping-cart me-2"></i> Mes Commandes
+                <i class="fas fa-shopping-cart me-2"></i>Commandes
             </a>
             <a href="profil.php">
                 <i class="fas fa-user me-2"></i>Mon Profil
@@ -107,7 +181,7 @@
             <div class="mt-5 px-3">
                 <div class="card bg-light text-dark p-3">
                     <small>Connecté en tant que:</small>
-                    <strong></strong>
+                    <strong><?php echo htmlspecialchars($_SESSION['user_nom']); ?></strong>
                     <small class="text-muted">Vendeur</small>
                 </div>
             </div>
@@ -139,7 +213,7 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <h6 class="text-muted">Produits</h6>
-                                    <h3></h3>
+                                    <h3><?php echo $stats['total_produits']; ?></h3>
                                 </div>
                                 <div class="stat-icon text-success">
                                     <i class="fas fa-box-open"></i>
@@ -155,7 +229,7 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <h6 class="text-muted">Stock Total</h6>
-                                    <h3></h3>
+                                    <h3><?php echo $stats['total_stock']; ?></h3>
                                 </div>
                                 <div class="stat-icon text-info">
                                     <i class="fas fa-warehouse"></i>
@@ -171,7 +245,7 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <h6 class="text-muted">Valeur Stock</h6>
-                                    <h3></h3>
+                                    <h3><?php echo number_format($stats['valeur_stock'], 2); ?> €</h3>
                                 </div>
                                 <div class="stat-icon text-warning">
                                     <i class="fas fa-euro-sign"></i>
@@ -188,10 +262,50 @@
                     <h5 class="mb-0"><i class="fas fa-boxes me-2"></i> Mes Derniers Produits</h5>
                 </div>
                 <div class="card-body">
-                    
+                    <?php if(count($produits) > 0): ?>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Nom</th>
+                                        <th>Description</th>
+                                        <th>Prix</th>
+                                        <th>Stock</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach(array_slice($produits, 0, 5) as $produit): ?>
+                                        <tr>
+                                            <td>
+                                                <img src="<?php echo htmlspecialchars($produit['image']); ?>" alt="<?php echo htmlspecialchars($produit['nom']); ?>" class="product-img" style="width: 80px;">
+                                            </td>
+                                            <td><?php echo htmlspecialchars($produit['nom']); ?></td>
+                                            <td><?php echo substr(htmlspecialchars($produit['description']), 0, 50) . '...'; ?></td>
+                                            <td><?php echo number_format($produit['prix'], 2); ?> €</td>
+                                            <td><?php echo $produit['quantite']; ?></td>
+                                            <td>
+                                                <a href="modifier_produit.php?id=<?php echo $produit['id_produit']; ?>" class="btn btn-sm btn-warning">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="supprimer_produit.php?id=<?php echo $produit['id_produit']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="text-end">
                             <a href="produits.php" class="btn btn-success">Voir tous mes produits</a>
                         </div>
+                    <?php else: ?>
+                        <div class="alert alert-info">
+                            Vous n'avez aucun produit enregistré. <a href="ajoutproduit.php" class="alert-link">Ajoutez votre premier produit</a>.
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
             

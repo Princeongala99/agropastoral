@@ -1,107 +1,8 @@
-<<<<<<< HEAD
-=======
-<?php
-session_start();
-
-// Vérifier si l'utilisateur est connecté et est un vendeur
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'vendeur') {
-    header("Location: connexion.php");
-    exit();
-}
-
-// Traitement du formulaire d'abonnement
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['souscrire'])) {
-    // Ici vous devriez traiter le paiement (via Stripe, PayPal, etc.)
-    // Pour cet exemple, nous marquons simplement que l'utilisateur a souscrit
-    
-    // Enregistrement en base de données
-    $conn = new mysqli("localhost", "root", "", "agropast");
-    if ($conn->connect_error) {
-        die("Échec de connexion : " . $conn->connect_error);
-    }
-    
-    $plan = $_POST['plan'];
-    $date_debut = date('Y-m-d');
-    $date_fin = date('Y-m-d', strtotime('+1 month')); // Exemple: abonnement d'1 mois
-    
-    $sql = "INSERT INTO abonnements (user_id, plan, date_debut, date_fin) VALUES (?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isss", $_SESSION['user_id'], $plan, $date_debut, $date_fin);
-    
-    if ($stmt->execute()) {
-        $_SESSION['abonnement_valide'] = true;
-        header("Location: vendeur_dashboard.php");
-        exit();
-    } else {
-        $error = "Erreur lors de l'enregistrement de l'abonnement. Veuillez réessayer.";
-    }
-    
-    $stmt->close();
-    $conn->close();
-}
-?>
-
->>>>>>> 45c14790dece1392286266e3a86a468be38f801b
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-    <title>AgroPastoral - Accueil</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="style.css"> 
-
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
-    <div class="container">
-        <a class="navbar-brand" href="#">AgroPastoral</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="Accueil.php">Accueil</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="inscription.php">Inscription</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="contact.php">Contact</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<section class="hero-section text-center">
-    <div class="form-container">
-        <h2 class="form-title">Abonnement</h2> 
-        <form method="POST" action="traitement_abonnement.php">
-            <input type="text" name="nom" placeholder="Votre nom" required>
-            <input type="text" name="transaction" placeholder="Numéro de transaction" required>
-            <input type="number" name="montant" placeholder="Montant" required>
-            <button type="submit">Confirmer</button>
-        </form>
-    </div>
-</section>
-
-<footer class="text-center mt-5">
-  <p>&copy; 2025 AgroPastoral. Tous droits réservés.</p>
-</footer>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
-=======
     <title>Abonnement Vendeur - AgroPastoral</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome@6.4.0/css/all.min.css">
@@ -220,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['souscrire'])) {
             <a class="navbar-brand" href="#">AgroPastoral</a>
             <div class="ml-auto">
                 <span class="navbar-text text-white">
-                    Connecté en tant que: <strong><?php echo htmlspecialchars($_SESSION['user_nom']); ?></strong> (Vendeur)
+                    Connecté en tant que: <strong></strong> (Vendeur)
                 </span>
             </div>
         </div>
@@ -253,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['souscrire'])) {
                         <div class="pricing-header">
                             <h3 class="pricing-title">Basique</h3>
                             <div class="pricing-price">
-                                <span class="currency">€</span>9.99
+                                <span class="currency">$</span>2
                                 <span class="pricing-period">/mois</span>
                             </div>
                         </div>
@@ -283,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['souscrire'])) {
                             </span>
                             <h3 class="pricing-title">Standard</h3>
                             <div class="pricing-price">
-                                <span class="currency">€</span>19.99
+                                <span class="currency">$</span>5
                                 <span class="pricing-period">/mois</span>
                             </div>
                         </div>
@@ -310,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['souscrire'])) {
                         <div class="pricing-header">
                             <h3 class="pricing-title">Premium</h3>
                             <div class="pricing-price">
-                                <span class="currency">€</span>29.99
+                                <span class="currency">$</span>10
                                 <span class="pricing-period">/mois</span>
                             </div>
                         </div>
@@ -399,4 +300,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['souscrire'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
->>>>>>> 45c14790dece1392286266e3a86a468be38f801b
