@@ -37,14 +37,14 @@
 
 <section class="hero-section text-center">
     <div class="form-container">
-        <h2 class="form-title">Connexion</h2> <!-- Titre du formulaire -->
-        <form method="POST" action="traitement_connexion.php">
+        <h2 class="form-title">Connexion Admin</h2> <!-- Titre du formulaire -->
+        <form method="POST" action="traitement_connexion_Admin.php">
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
             <button type="submit">Connexion</button>
         </form>
         <div class="link">
-            <p>Vous n'avez pas de compte? ?   <a href="inscription.php">S'inscrire</a></p>
+            <p>Vous n'avez pas de compte? ?   <a href="inscription_Admin.php">S'inscrire</a></p>
         </div>
     </div>
 </section>

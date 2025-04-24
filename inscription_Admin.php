@@ -25,7 +25,7 @@
                     <a class="nav-link" href="Accueil.php">Accueil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="inscription.php">Inscription</a>
+                    <a class="nav-link" href="connexion.php">Connexion</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="contact.php">Contact</a>
@@ -37,14 +37,20 @@
 
 <section class="hero-section text-center">
     <div class="form-container">
-        <h2 class="form-title">Connexion</h2> <!-- Titre du formulaire -->
-        <form method="POST" action="traitement_connexion.php">
+        <h2 class="form-title">Créer un compte Admin</h2> 
+        <form method="POST" action="traitement_inscription_Admin.php">
             <input type="text" name="nom" placeholder="Nom" required>
+            <input type="text" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
-            <button type="submit">Connexion</button>
+        </select>
+        <input type="text" name="tel" placeholder="votre mun de telephone" required>            
+        <input type="text" name="address" placeholder="votre adresse" required>
+
+
+            <button type="submit">S'inscrire</button>
         </form>
         <div class="link">
-            <p>Vous n'avez pas de compte? ?   <a href="inscription.php">S'inscrire</a></p>
+            <p>Déjà inscrit ? <a href="connexion_Admin.php">Se connecter</a></p>
         </div>
     </div>
 </section>

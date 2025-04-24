@@ -42,11 +42,11 @@
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="text" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
-            <select id="role" name="role" required>
+            <!-- <select id="role" name="role" required>
             <option value="">-- Sélectionnez votre rôle --</option>
-            <option value="administrateur">Administrateur</option>
+            <option value="admin">Admin</option>
             <option value="vendeur">Vendeur</option>
-            <option value="acheteur">Acheteur</option>
+            <option value="acheteur">Acheteur</option> -->
         </select>
         <input type="text" name="tel" placeholder="votre mun de telephone" required>            
         <input type="text" name="address" placeholder="votre adresse" required>
