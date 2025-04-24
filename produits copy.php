@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "agropastoral");
+$conn = new mysqli("localhost", "root", "", "agropast");
 
 if ($conn->connect_error) {
     die("Échec de connexion : " . $conn->connect_error);
@@ -8,7 +8,7 @@ if ($conn->connect_error) {
 // Suppression d'un produit
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    $sql = "DELETE FROM produits WHERE id = ?";
+    $sql = "DELETE FROM produits WHERE id_produit = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -21,24 +21,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit'])) {
     $id = $_POST['id'];
     $nom = $_POST['nom'];
     $description = $_POST['description'];
-    $image = $_FILES['image']['name'];
-    $tmpImage = $_FILES['image']['tmp_name'];
+    $targetDir = "images/";
+    
+    // Récupérer l'ancien chemin de l'image avant modification
+    $sql_select = "SELECT image FROM produits WHERE id_produit = ?";
+    $stmt_select = $conn->prepare($sql_select);
+    $stmt_select->bind_param("i", $id);
+    $stmt_select->execute();
+    $result = $stmt_select->get_result();
+    $old_image = $result->fetch_assoc()['image'];
+    $stmt_select->close();
 
     // Si une nouvelle image est téléchargée
-    if ($image) {
-        move_uploaded_file($tmpImage, 'uploads/' . $image);
-        $sql = "UPDATE produits SET nom = ?, description = ?, image = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssi", $nom, $description, $image, $id);
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+        $imageName = basename($_FILES['image']['name']);
+        $targetFile = $targetDir . time() . "_" . $imageName;
+        
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+            // Supprimer l'ancienne image si elle existe
+            if (!empty($old_image) && file_exists($old_image)) {
+                unlink($old_image);
+            }
+            
+            $sql = "UPDATE produits SET nom = ?, description = ?, image = ? WHERE id_produit = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sssi", $nom, $description, $targetFile, $id);
+        } else {
+            $error = "Erreur lors du téléchargement de la nouvelle image.";
+            header("Location: produits.php?error=" . urlencode($error));
+            exit();
+        }
     } else {
         // Si aucune image n'est téléchargée, on garde l'image existante
-        $sql = "UPDATE produits SET nom = ?, description = ? WHERE id = ?";
+        $sql = "UPDATE produits SET nom = ?, description = ? WHERE id_produit = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssi", $nom, $description, $id);
     }
 
-    $stmt->execute();
-    header("Location: produits.php"); // Redirige après modification
+    if ($stmt->execute()) {
+        $success = "Produit modifié avec succès.";
+        header("Location: produits.php?success=" . urlencode($success));
+    } else {
+        $error = "Erreur lors de la modification du produit.";
+        header("Location: produits.php?error=" . urlencode($error));
+    }
+    $stmt->close();
     exit();
 }
 
@@ -116,7 +143,7 @@ $result = $conn->query($sql);
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="accueil.php">Accueil</a></li>
-                <li class="nav-item"><a class="nav-link" href="produits.php">Nos productions</a></li>
+                <li class="nav-item"><a class="nav-link" href="nosproduits.php">Nos productions</a></li>
                 <li class="nav-item"><a class="nav-link" href="ajoutproduit.php">Ajouter produit</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
             </ul>
@@ -140,8 +167,8 @@ $result = $conn->query($sql);
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($row['nom']); ?></h5>
                         <p class="card-text"><?php echo htmlspecialchars($row['description']); ?></p>
-                        <a href="#" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editProductModal" data-id="<?php echo $row['id']; ?>" data-nom="<?php echo $row['nom']; ?>" data-description="<?php echo $row['description']; ?>" data-image="<?php echo $row['image']; ?>">Modifier</a>
-                        <a href="?delete=<?php echo $row['id']; ?>" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">Supprimer</a>
+                        <a href="#" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editProductModal" data-id="<?php echo $row['id_produit']; ?>" data-nom="<?php echo $row['nom']; ?>" data-description="<?php echo $row['description']; ?>" data-image="<?php echo $row['image']; ?>">Modifier</a>
+                        <a href="?delete=<?php echo $row['id_produit']; ?>" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">Supprimer</a>
                     </div>
                 </div>
             </div>

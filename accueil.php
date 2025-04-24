@@ -26,7 +26,7 @@
                         <a class="nav-link" href="meteo.php">Meteo</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="produits.php">Nos productions</a>
+                        <a class="nav-link" href="nosproduits.php">Nos productions</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="connexion.php">Connexion</a>
