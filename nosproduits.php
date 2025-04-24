@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "agropast");
+$conn = new mysqli("localhost", "root", "", "agropastoral");
 
 if ($conn->connect_error) {
     die("Échec de connexion : " . $conn->connect_error);
