@@ -11,6 +11,8 @@ $error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nom = $_POST["nom"];
     $description = $_POST["description"];
+    $quantite = $_POST["quantite"]; 
+    $prix = $_POST["prix"];         
 
     if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
         $targetDir = "images/";
@@ -18,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $targetFile = $targetDir . time() . "_" . $imageName;
 
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-            $stmt = $conn->prepare("INSERT INTO produits (nom, description, image) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $nom, $description, $targetFile);
+            $stmt = $conn->prepare("INSERT INTO produits (nom, description, quantite, prix, image) VALUES (?, ?, ?, ?, ?)"); 
+            $stmt->bind_param("ssids", $nom, $description, $quantite, $prix, $targetFile); 
 
             if ($stmt->execute()) {
                 $success = "Produit ajouté avec succès.";
@@ -36,12 +38,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Ajouter un produit</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --primary-color: #4a8c3a;
@@ -50,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         body {
             background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Montserrat', sans-serif;
         }
 
         .form-container {
@@ -133,7 +138,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </nav>
 
 <div class="form-container">
-    <h2 class="text-center mb-4">➕ Ajouter un nouveau produit</h2>
+    <h3 class="text-center mb-4">➕ Ajouter un nouveau produit</h3>
 
     <?php if ($success): ?>
         <div class="alert alert-success fade-alert"><?php echo $success; ?></div>
@@ -156,13 +161,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea name="description" class="form-control" rows="3"></textarea>
+            <label for="quantite" class="form-label">Quantité</label>
+            <input type="number" name="quantite" class="form-control" min="1" required>
         </div>
+
+        <div class="mb-3">
+            <label for="prix" class="form-label">Prix unitaire</label>
+            <input type="number" name="prix" step="0.01" class="form-control" required>
+        </div>
+
 
         <div class="mb-3">
             <label for="image" class="form-label">Image du produit</label>
             <input type="file" name="image" class="form-control" accept="image/*" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3"></textarea>
         </div>
 
         <button type="submit" class="btn btn-agro w-100">Ajouter le produit</button>
