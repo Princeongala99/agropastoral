@@ -25,14 +25,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit'])) {
     $prix = $_POST['prix'];
     $image = $_FILES['image']['name'];
     $tmpImage = $_FILES['image']['tmp_name'];
+    
+    if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
+        $targetDir = "images/";
+        $imageName = basename($_FILES["image"]["name"]);
+        $targetFile = $targetDir . time() . "_" . $imageName;
 
-    if ($image) {
-        $imagePath = 'uploads/' . time() . '_' . $image;
-        move_uploaded_file($tmpImage, $imagePath);
-        $sql = "UPDATE produits SET nom = ?, description = ?, quantite = ?, prix = ?, image = ? WHERE id_produit = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssidsi", $nom, $description, $quantite, $prix, $imagePath, $id);
-    } else {
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
+            $sql = "UPDATE produits SET nom = ?, description = ?, quantite = ?, prix = ?, image = ? WHERE id_produit = ?"; 
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssids", $nom, $description, $quantite, $prix, $targetFile, $id); 
+
+            if ($stmt->execute()) {
+                $success = "Produit ajouté avec succès.";
+            } else {
+                $error = "Erreur lors de l'ajout à la base de données.";
+            }
+            $stmt->close();
+        } else {
+            $error = "Erreur lors du téléchargement de l'image.";
+        }
+    }
+     
+    else {
         $sql = "UPDATE produits SET nom = ?, description = ?, quantite = ?, prix = ? WHERE id_produit = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssidi", $nom, $description, $quantite, $prix, $id);
@@ -202,10 +217,6 @@ $result = $conn->query($sql);
                         <input type="text" class="form-control" id="editNom" name="nom" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="editDescription" name="description" required></textarea>
-                    </div>
-                    <div class="mb-3">
                         <label for="editQuantite" class="form-label">Quantité</label>
                         <input type="number" class="form-control" id="editQuantite" name="quantite" min="1" required>
                     </div>
@@ -215,7 +226,11 @@ $result = $conn->query($sql);
                     </div>
                     <div class="mb-3">
                         <label for="editImage" class="form-label">Image</label>
-                        <input type="file" class="form-control" id="editImage" name="image">
+                        <input type="file" class="form-control" id="editImage" name="image" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription" name="description" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
