@@ -46,41 +46,118 @@ foreach ($_SESSION['panier'] as $key => $item) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --agro-primary: #2E8B57;
+            --agro-secondary: #8FBC8F;
+            --agro-light: #F0FFF0;
+            --agro-dark: #006400;
+        }
+        
+        body {
+            background-color: var(--agro-light);
+        }
+        
+        .navbar {
+            background-color: var(--agro-primary) !important;
+        }
+        
+        footer {
+            background-color: var(--agro-primary) !important;
+            color: white !important;
+        }
+        
+        .card {
+            border: 1px solid var(--agro-secondary);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
         .card-img-top {
             height: 180px;
             object-fit: cover;
+            border-bottom: 1px solid var(--agro-secondary);
+        }
+        
+        .btn-agro {
+            background-color: var(--agro-primary);
+            color: white;
+        }
+        
+        .btn-agro:hover {
+            background-color: var(--agro-dark);
+            color: white;
+        }
+        
+        .empty-cart-icon {
+            font-size: 5rem;
+            color: var(--agro-secondary);
         }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow">
     <div class="container">
-        <a class="navbar-brand" href="index.php">AgroPastoral</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <a class="navbar-brand fw-bold" href="index.php">
+            <i class="fas fa-leaf me-2"></i>AgroPastoral
+        </a>
+        <a href="acheteur_dashboard.php" class="btn btn-outline-light">
+            <i class="fas fa-arrow-left me-1"></i> Retour
+        </a>
     </div>
 </nav>
 
-<div class="container py-4">
-    <h2 class="mb-4">🛒 Mon Panier</h2>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="fw-bold text-agro-dark">
+                <i class="fas fa-shopping-cart me-2"></i>Mon Panier
+            </h2>
+        </div>
+    </div>
 
     <?php if (empty($_SESSION['panier'])): ?>
-        <div class="alert alert-warning">Votre panier est vide.</div>
+        <div class="text-center py-5">
+            <div class="empty-cart-icon mb-3">
+                <i class="fas fa-shopping-basket"></i>
+            </div>
+            <h3 class="text-muted mb-3">Votre panier est vide</h3>
+            <a href="acheteur_dashboard.php" class="btn btn-agro btn-lg">
+                <i class="fas fa-store me-1"></i> Continuer vos achats
+            </a>
+        </div>
     <?php else: ?>
         <div class="row g-4">
             <?php foreach ($groupes as $nom => $groupe): ?>
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <img src="<?= htmlspecialchars($groupe['infos']['image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($nom) ?>">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title"><?= htmlspecialchars($nom) ?></h5>
-                            <p class="card-text mb-1">Prix unitaire : <strong><?= htmlspecialchars($groupe['infos']['prix']) ?> Fc</strong></p>
-                            <p class="card-text mb-1">Quantité : <strong><?= $groupe['quantite'] ?></strong></p>
-                            <p class="card-text text-muted">Total : <strong><?= $groupe['total'] ?> Fc</strong></p>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100">
+                        <img src="<?= htmlspecialchars($groupe['infos']['image']) ?>" 
+                             class="card-img-top" 
+                             alt="<?= htmlspecialchars($nom) ?>">
+                        <div class="card-body">
+                            <h5 class="card-title text-success"><?= htmlspecialchars($nom) ?></h5>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Prix unitaire:</span>
+                                <strong><?= htmlspecialchars($groupe['infos']['prix']) ?> Fc</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Quantité:</span>
+                                <strong><?= $groupe['quantite'] ?></strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Total:</span>
+                                <strong class="text-success"><?= $groupe['total'] ?> Fc</strong>
+                            </div>
                             <?php foreach ($groupe['keys'] as $key): ?>
-                                <a href="panier.php?action=supprimer&id=<?= $key ?>" class="btn btn-outline-danger btn-sm mt-1"><i class="fas fa-trash-alt"></i> Supprimer</a>
+                                <a href="panier.php?action=supprimer&id=<?= $key ?>" 
+                                   class="btn btn-outline-danger btn-sm w-100 mb-2"
+                                   onclick="return confirm('Supprimer cet article ?')">
+                                    <i class="fas fa-trash-alt me-1"></i> Supprimer
+                                </a>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -88,29 +165,38 @@ foreach ($_SESSION['panier'] as $key => $item) {
             <?php endforeach; ?>
         </div>
 
-        <div class="text-end mt-4">
-            <h4>Total à payer : <strong><?= $total ?> Fc</strong></h4>
-            <a href="gestion_commandes.php" class="btn btn-success btn-lg mt-2"><i class="fas fa-credit-card"></i> Commander</a>
+        <div class="row mt-5">
+            <div class="col-md-6 offset-md-6">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Récapitulatif</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h5>Total:</h5>
+                            <h4 class="text-success fw-bold"><?= $total ?> Fc</h4>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a href="gestion_commandes.php" class="btn btn-agro btn-lg">
+                                <i class="fas fa-credit-card me-2"></i> Passer la commande
+                            </a>
+                            <a href="acheteur_dashboard.php" class="btn btn-outline-success">
+                                <i class="fas fa-store me-1"></i> Continuer mes achats
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     <?php endif; ?>
 </div>
 
-<footer class="text-center bg-light py-3 mt-5">
-    <p>&copy; <?= date('Y') ?> AgroPastoral - Panier</p>
+<footer class="text-center py-3 mt-5">
+    <div class="container">
+        <p class="mb-0">&copy; <?= date('Y') ?> AgroPastoral - Tous droits réservés</p>
+    </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const deleteLinks = document.querySelectorAll('a[href*="action=supprimer"]');
-        deleteLinks.forEach(link => {
-            link.addEventListener('click', function(event) {
-                if (!confirm("Êtes-vous sûr de vouloir supprimer cet article du panier ?")) {
-                    event.preventDefault();
-                }
-            });
-        });
-    });
-</script>
 </body>
 </html>

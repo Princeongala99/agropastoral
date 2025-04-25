@@ -71,41 +71,110 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     <meta charset="UTF-8">
     <title>Détails du produit - AgroPastoral</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --agro-primary: #2E8B57;  /* Vert forêt */
+            --agro-secondary: #8FBC8F; /* Vert clair */
+            --agro-light: #F0FFF0;    /* Vert très clair */
+            --agro-dark: #006400;     /* Vert foncé */
+        }
+        
+        .bg-agro-primary {
+            background-color: var(--agro-primary);
+        }
+        
+        .bg-agro-secondary {
+            background-color: var(--agro-secondary);
+        }
+        
+        .bg-agro-light {
+            background-color: var(--agro-light);
+        }
+        
+        .btn-agro {
+            background-color: var(--agro-primary);
+            color: white;
+            border: none;
+        }
+        
+        .btn-agro:hover {
+            background-color: var(--agro-dark);
+            color: white;
+        }
+        
+        .product-card {
+            border: 1px solid var(--agro-secondary);
+            border-radius: 10px;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-agro-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-agro-primary sticky-top shadow">
     <div class="container">
-        <a class="navbar-brand" href="index.php">AgroPastoral</a>
+        <a class="navbar-brand fw-bold" href="index.php">
+            <i class="fas fa-leaf me-2"></i>AgroPastoral
+        </a>
     </div>
 </nav>
 
-<section style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
-    <div class="container py-4" style="max-width: 600px;">
-        <h2><?php echo htmlspecialchars($product['nom']); ?></h2>
-        <p><strong>Description:</strong> <?php echo htmlspecialchars($product['description']); ?></p>
-        <p><strong>Prix:</strong> <?php echo htmlspecialchars($product['prix']); ?> EUR</p>
-        <p><strong>Quantité disponible:</strong> <?php echo htmlspecialchars($product['quantite']); ?></p>
-        <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['nom']); ?>" class="img-fluid mb-3">
+<section class="py-5">
+    <div class="container product-card bg-white p-4 shadow-sm" style="max-width: 600px;">
+        <div class="text-center mb-4">
+            <img src="<?php echo htmlspecialchars($product['image']); ?>" 
+                 alt="<?php echo htmlspecialchars($product['nom']); ?>" 
+                 class="img-fluid rounded" 
+                 style="max-height: 300px; object-fit: cover;">
+        </div>
+        
+        <h2 class="text-agro-primary mb-3"><?php echo htmlspecialchars($product['nom']); ?></h2>
+        
+        <div class="mb-3">
+            <h5 class="text-agro-dark">Description</h5>
+            <p class="text-muted"><?php echo htmlspecialchars($product['description']); ?></p>
+        </div>
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h5 class="text-agro-dark">Prix</h5>
+                <p class="fs-4 text-success fw-bold"><?php echo htmlspecialchars($product['prix']); ?> €</p>
+            </div>
+            <div class="col-md-6">
+                <h5 class="text-agro-dark">Stock disponible</h5>
+                <p class="fs-5"><?php echo htmlspecialchars($product['quantite']); ?> unités</p>
+            </div>
+        </div>
 
         <!-- Formulaire pour ajouter au panier -->
-        <form method="POST">
+        <form method="POST" class="mt-4">
             <div class="mb-3">
-                <label for="quantite" class="form-label">Quantité</label>
-                <input type="number" name="quantite" class="form-control" min="1" max="<?php echo $product['quantite']; ?>" value="1" required>
+                <label for="quantite" class="form-label fw-bold">Quantité</label>
+                <input type="number" name="quantite" class="form-control" 
+                       min="1" max="<?php echo $product['quantite']; ?>" 
+                       value="1" required>
             </div>
-            <button type="submit" name="ajouter_panier" class="btn btn-primary">Ajouter au panier</button>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="acheteur_dashboard.php" class="btn btn-outline-secondary me-md-2">
+                    <i class="fas fa-arrow-left me-1"></i> Retour
+                </a>
+                <button type="submit" name="ajouter_panier" class="btn btn-agro">
+                    <i class="fas fa-cart-plus me-1"></i> Ajouter au panier
+                </button>
+            </div>
         </form>
     </div>
 </section>
 
-<footer class="text-center bg-light py-3 mt-5">
-    <p>&copy; <?php echo date('Y'); ?> AgroPastoral - Détails du produit</p>
+<footer class="text-center text-white py-3 bg-agro-primary mt-5">
+    <div class="container">
+        <p class="mb-0">&copy; <?php echo date('Y'); ?> AgroPastoral - Tous droits réservés</p>
+    </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
 </body>
 </html>
