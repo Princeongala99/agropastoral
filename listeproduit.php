@@ -145,6 +145,7 @@ $result = $conn->query($sql);
                 <li class="nav-item"><a class="nav-link" href="accueil.php">Accueil</a></li>
                 <li class="nav-item"><a class="nav-link" href="nosproduits.php">Nos productions</a></li>
                 <li class="nav-item"><a class="nav-link" href="ajoutproduit.php">Ajouter produit</a></li>
+                <li class="nav-item"><a class="nav-link" href="listeproduit.php?mes=1">Mes produits</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
             </ul>
         </div>

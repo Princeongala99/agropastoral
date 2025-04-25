@@ -4,7 +4,7 @@ session_start();
 $dbHost = "localhost";
 $dbUser = "root";
 $dbPass = "";
-$dbName = "agropastoral";
+$dbName = "agropast";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -72,8 +72,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("ssssss", $nom, $email, $hashed_password, $role, $tel, $address);
 
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
-            header("Location: connexion.php");
+            $_SESSION['success_message'] = "Inscription réussie !";
+
+            // Redirection selon le rôle
+            if (strtolower($role) === 'vendeur') {
+                header("Location: abonnement.php");
+            } else {
+                header("Location: connexion.php");
+            }
+
         } else {
             if ($conn->errno == 1062) {
                 $_SESSION['error_message'] = "Cette adresse email est déjà utilisée.";

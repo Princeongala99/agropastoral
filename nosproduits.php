@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "agropast");
+$conn = new mysqli("localhost", "root", "", "agropastoral");
 
 if ($conn->connect_error) {
     die("Échec de connexion : " . $conn->connect_error);
@@ -89,7 +89,6 @@ $result = $conn->query($sql);
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="accueil.php">Accueil</a></li>
                 <li class="nav-item"><a class="nav-link" href="nosproduits.php">Nos productions</a></li>
-                <li class="nav-item"><a class="nav-link" href="ajoutproduit.php">Ajouter produit</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
             </ul>
         </div>
