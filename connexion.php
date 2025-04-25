@@ -34,15 +34,23 @@
 
 <section class="hero-section text-center">
     <div class="form-container">
+<<<<<<< HEAD
         <h2 class="form-title">Connexion</h2>
         <!-- Un seul formulaire avec la bonne action -->
+=======
+        <h2 class="form-title">Connexion</h2> <!-- Titre du formulaire -->
+>>>>>>> 07db2b7109860a1e9532a9538aa1a837d34e6ade
         <form method="POST" action="traitement_connexion.php">
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
             <button type="submit">Connexion</button>
         </form>
         <div class="link">
+<<<<<<< HEAD
             <p>Vous n'avez pas de compte? <a href="inscription.php">S'inscrire</a></p>
+=======
+            <p>Vous n'avez pas de compte? ?   <a href="inscription.php">S'inscrire</a></p>
+>>>>>>> 07db2b7109860a1e9532a9538aa1a837d34e6ade
         </div>
     </div>
 </section>
@@ -53,4 +61,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+ 
+>>>>>>> 07db2b7109860a1e9532a9538aa1a837d34e6ade
