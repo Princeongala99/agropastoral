@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "agropast");
+$conn = new mysqli("localhost", "root", "", "agropastoral");
 
 if ($conn->connect_error) {
     die("Échec de connexion : " . $conn->connect_error);
@@ -80,6 +80,7 @@ $result = $conn->query($sql);
     <title>Nos Produits</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* Styles existants */
         :root {
@@ -88,7 +89,7 @@ $result = $conn->query($sql);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'montserrat', sans-serif;
             background-color: #f8f9fa;
         }
 
@@ -121,7 +122,9 @@ $result = $conn->query($sql);
         }
 
         .product-img {
-            height: 250px;
+            height: 200px;
+            width: 200px;
+            align-self: center;
             object-fit: cover;
         }
 

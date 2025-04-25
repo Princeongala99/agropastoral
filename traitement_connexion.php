@@ -1,122 +1,67 @@
 <?php
 session_start();
 
-// Configuration de la base de données
-$dbHost = "localhost";
-$dbUser = "root";
-$dbPass = "";
-$dbName = "agropastoral";
+// Paramètres de connexion à la base de données
+$host = 'localhost';
+$user = 'root';
+$pass = '';
+$dbname = 'agropastoral';
 
-// Vérification de la méthode de requête
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validation des champs
-    if (empty(trim($_POST['nom']))) {
-        $_SESSION['notification'] = [
-            'type' => 'error',
-            'title' => 'Champ requis',
-            'message' => 'Le nom d\'utilisateur est obligatoire pour la connexion.'
-        ];
-        header("Location: connexion.php");
-        exit;
+// Vérifie si la requête est bien un POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Récupération et nettoyage des données
+    $nom = trim($_POST['nom'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+
+    // Vérifie que les champs ne sont pas vides
+    if (empty($nom) || empty($password)) {
+        $_SESSION['error'] = "Veuillez remplir tous les champs.";
+        header('Location: connexion.php');
+        exit();
     }
 
-    if (empty(trim($_POST['password']))) {
-        $_SESSION['notification'] = [
-            'type' => 'error',
-            'title' => 'Champ requis',
-            'message' => 'Veuillez saisir votre mot de passe pour continuer.'
-        ];
-        header("Location: connexion.php");
-        exit;
+    // Connexion à la base de données
+    $conn = new mysqli($host, $user, $pass, $dbname);
+
+    if ($conn->connect_error) {
+        die("Erreur de connexion à la base de données : " . $conn->connect_error);
     }
 
-    // Nettoyage des données
-    $nom = trim($_POST['nom']);
-    $password = trim($_POST['password']);
+    $conn->set_charset("utf8mb4");
 
-    try {
-        // Connexion à la base de données
-        $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
+    // Requête préparée sécurisée
+    $stmt = $conn->prepare("SELECT id_utilisateur, nom, mot_de_passe_hash FROM utilisateur WHERE nom = ?");
+    $stmt->bind_param("s", $nom);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        // Vérification de la connexion
-        if ($conn->connect_error) {
-            throw new Exception("Erreur de connexion à la base de données");
-        }
+    // Si on trouve l'utilisateur
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
 
-        $conn->set_charset("utf8mb4");
+        // Vérifie le mot de passe avec password_verify
+        if (password_verify($password, $user['mot_de_passe_hash'])) {
+            $_SESSION['logged_in'] = true;
+            $_SESSION['user_nom'] = $user['nom'];
+            $_SESSION['user_id'] = $user['id_utilisateur'];
 
-        // Requête préparée pour la sécurité
-        $sql = "SELECT id_utilisateur, nom, email, mot_de_passe_hash, role FROM utilisateur WHERE nom = ?";
-        $stmt = $conn->prepare($sql);
-
-        if (!$stmt) {
-            throw new Exception("Erreur de préparation de la requête");
-        }
-
-        $stmt->bind_param("s", $nom);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        // Vérification de l'utilisateur
-        if ($result->num_rows === 1) {
-            $user = $result->fetch_assoc();
-            
-            // Vérification du mot de passe
-            if (password_verify($password, $user['mot_de_passe_hash'])) {
-                // Connexion réussie - Initialisation de la session
-                $_SESSION['user_id'] = $user['id_utilisateur'];
-                $_SESSION['user_nom'] = $user['nom'];
-                $_SESSION['user_email'] = $user['email'];
-                $_SESSION['user_role'] = $user['role'];
-                $_SESSION['logged_in'] = true;
-                
-                // Notification de succès
-                $_SESSION['notification'] = [
-                    'type' => 'success',
-                    'title' => 'Connexion réussie',
-                    'message' => 'Vous êtes maintenant connecté à votre compte.'
-                ];
-                
-                header("Location: produits.php");
-                exit;
-            } else {
-                $_SESSION['notification'] = [
-                    'type' => 'error',
-                    'title' => 'Échec de connexion',
-                    'message' => 'La combinaison nom d\'utilisateur/mot de passe est incorrecte.'
-                ];
-            }
+            header('Location: produits.php');
+            exit();
         } else {
-            $_SESSION['notification'] = [
-                'type' => 'error',
-                'title' => 'Compte introuvable',
-                'message' => 'Aucun compte ne correspond à ces identifiants.'
-            ];
+            $_SESSION['error'] = "Mot de passe incorrect.";
+            header('Location: connexion.php');
+            exit();
         }
-
-        $stmt->close();
-        $conn->close();
-        
-    } catch (Exception $e) {
-        error_log($e->getMessage());
-        $_SESSION['notification'] = [
-            'type' => 'error',
-            'title' => 'Erreur technique',
-            'message' => 'Un problème est survenu lors de la connexion. Notre équipe a été notifiée.'
-        ];
+    } else {
+        $_SESSION['error'] = "Nom d'utilisateur introuvable.";
+        header('Location: connexion.php');
+        exit();
     }
 
-    // Redirection en cas d'échec
-    header("Location: connexion.php");
-    exit;
+    $stmt->close();
+    $conn->close();
 } else {
-    // Accès non autorisé
-    $_SESSION['notification'] = [
-        'type' => 'warning',
-        'title' => 'Accès non autorisé',
-        'message' => 'Vous devez utiliser le formulaire de connexion pour accéder à cette page.'
-    ];
-    header("Location: accueil.php");
-    exit;
+    // Accès direct interdit
+    header('Location: connexion.php');
+    exit();
 }
-?>

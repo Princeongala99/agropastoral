@@ -91,8 +91,8 @@ $result = $conn->query($sql);
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="accueil.php">Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="meteo.php">Meteo</a></li>
                 <li class="nav-item"><a class="nav-link" href="nosproduits.php">Nos productions</a></li>
-                <li class="nav-item"><a class="nav-link" href="connexion.php">Ajouter un productions</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
             </ul>
         </div>
