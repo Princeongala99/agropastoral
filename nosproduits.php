@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "agropastoral");
+$conn = new mysqli("localhost", "root", "", "agropast");
 
 if ($conn->connect_error) {
     die("Échec de connexion : " . $conn->connect_error);
@@ -89,6 +89,7 @@ $result = $conn->query($sql);
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="accueil.php">Accueil</a></li>
                 <li class="nav-item"><a class="nav-link" href="nosproduits.php">Nos productions</a></li>
+                <li class="nav-item"><a class="nav-link" href="connexion.php">Ajouter un productions</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
             </ul>
         </div>
@@ -111,7 +112,7 @@ $result = $conn->query($sql);
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($row['nom']); ?></h5>
                         <p class="card-text"><?php echo htmlspecialchars($row['description']); ?></p>
-                        <a href="connexion.php" class="btn btn-see-more">Voir plus</a>
+                        <a href="detailproduit.php" class="btn btn-see-more">Voir plus</a>
                     </div>
                 </div>
             </div>

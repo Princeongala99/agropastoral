@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "agropastoral");
+$conn = new mysqli("localhost", "root", "", "agropast");
 
 if ($conn->connect_error) {
     die("Échec de connexion : " . $conn->connect_error);
@@ -158,7 +158,7 @@ $result = $conn->query($sql);
     </div>
 </section>
 
-<div class="container py-4">
+<<div class="container py-4">
     <div class="row g-4">
         <?php while ($row = $result->fetch_assoc()): ?>
             <div class="col-md-4">
@@ -167,14 +167,41 @@ $result = $conn->query($sql);
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($row['nom']); ?></h5>
                         <p class="card-text"><?php echo htmlspecialchars($row['description']); ?></p>
-                        <a href="#" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editProductModal" data-id="<?php echo $row['id_produit']; ?>" data-nom="<?php echo $row['nom']; ?>" data-description="<?php echo $row['description']; ?>" data-image="<?php echo $row['image']; ?>">Modifier</a>
-                        <a href="?delete=<?php echo $row['id_produit']; ?>" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">Supprimer</a>
+                        
+                        <?php if(isset($_SESSION['user_id']) && $_SESSION['user_role'] === 'vendeur' && isset($_SESSION['abonnement_valide'])): ?>
+                            <!-- Boutons visibles seulement pour les vendeurs connectés et abonnés -->
+                            <a href="#" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editProductModal" 
+                               data-id="<?php echo $row['id_produit']; ?>" 
+                               data-nom="<?php echo $row['nom']; ?>" 
+                               data-description="<?php echo $row['description']; ?>" 
+                               data-image="<?php echo $row['image']; ?>">
+                                Modifier
+                            </a>
+                            <a href="?delete=<?php echo $row['id_produit']; ?>" class="btn btn-danger" 
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">
+                                Supprimer
+                            </a>
+                        <?php else: ?>
+                            <!-- Boutons de connexion pour les non-connectés -->
+                            <button class="btn btn-warning" onclick="redirectToLogin('modifier')">Modifier</button>
+                            <button class="btn btn-danger" onclick="redirectToLogin('supprimer')">Supprimer</button>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         <?php endwhile; ?>
     </div>
 </div>
+
+<script>
+function redirectToLogin(action) {
+    if(confirm('Vous devez être connecté en tant que vendeur pour ' + action + ' un produit. Voulez-vous vous connecter maintenant ?')) {
+        // Stocker l'action et l'ID du produit si nécessaire
+        sessionStorage.setItem('redirect_after_login', window.location.href);
+        window.location.href = 'connexion.php';
+    }
+}
+</script>>
 
 <!-- Modal pour modifier un produit -->
 <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
