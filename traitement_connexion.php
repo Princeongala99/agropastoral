@@ -5,7 +5,7 @@ session_start();
 $dbHost = "localhost";
 $dbUser = "root";
 $dbPass = "";
-$dbName = "agropast";
+$dbName = "agropastoral";
 
 // Vérification de la méthode de requête
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
