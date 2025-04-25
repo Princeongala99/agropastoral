@@ -1,7 +1,5 @@
 <?php
 session_start();
-
-
 // Vérification de la connexion et du rôle
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'vendeur') {
     header("Location: connexion.php");
@@ -10,7 +8,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'vendeur') {
 if (!isset($_SESSION['abonnement_valide']) || $_SESSION['abonnement_valide'] !== true) {
     header("Location: abonnement.php");
     exit();
-}
+} 
 
 // Connexion à la base de données
 $conn = new mysqli("localhost", "root", "", "agropast");

@@ -2,7 +2,7 @@
 // Récupérer l'ID du produit depuis l'URL
 $id_produit = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-$conn = new mysqli("localhost", "root", "", "agropast");
+$conn = new mysqli("localhost", "root", "", "agropastoral");
 if ($conn->connect_error) die("Connexion échouée: " . $conn->connect_error);
 
 // Requête principale du produit + vendeur (filtrée par rôle "vendeur")

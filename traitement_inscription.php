@@ -4,7 +4,7 @@ session_start();
 $dbHost = "localhost";
 $dbUser = "root";
 $dbPass = "";
-$dbName = "agropast";
+$dbName = "agropastoral";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
