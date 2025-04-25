@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgroPastoral - Accueil</title>
-
+    <title>AgroPastoral - Connexion</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="style.css"> 
-
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
@@ -37,14 +34,23 @@
 
 <section class="hero-section text-center">
     <div class="form-container">
+<<<<<<< HEAD
+        <h2 class="form-title">Connexion</h2>
+        <!-- Un seul formulaire avec la bonne action -->
+=======
         <h2 class="form-title">Connexion</h2> <!-- Titre du formulaire -->
+>>>>>>> 07db2b7109860a1e9532a9538aa1a837d34e6ade
         <form method="POST" action="traitement_connexion.php">
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
             <button type="submit">Connexion</button>
         </form>
         <div class="link">
+<<<<<<< HEAD
+            <p>Vous n'avez pas de compte? <a href="inscription.php">S'inscrire</a></p>
+=======
             <p>Vous n'avez pas de compte? ?   <a href="inscription.php">S'inscrire</a></p>
+>>>>>>> 07db2b7109860a1e9532a9538aa1a837d34e6ade
         </div>
     </div>
 </section>
@@ -53,9 +59,11 @@
   <p>&copy; 2025 AgroPastoral. Tous droits réservés.</p>
 </footer>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
+<<<<<<< HEAD
+</html>
+=======
 </html>
  
+>>>>>>> 07db2b7109860a1e9532a9538aa1a837d34e6ade
