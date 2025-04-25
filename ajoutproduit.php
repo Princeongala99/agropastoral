@@ -1,6 +1,21 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "agropastoral");
+session_start();
 
+// Redirection si pas connecté
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['redirect_after_login'] = 'ajoutproduit.php';
+    header("Location: connexion.php");
+    exit();
+}
+
+// Redirection si vendeur non abonné
+if ($_SESSION['user_role'] === 'vendeur' && (!isset($_SESSION['abonnement_valide']) || $_SESSION['abonnement_valide'] !== true)) {
+    header("Location: abonnement.php");
+    exit();
+}
+
+// Connexion à la base de données
+$conn = new mysqli("localhost", "root", "", "agropast");
 if ($conn->connect_error) {
     die("Connexion échouée : " . $conn->connect_error);
 }
@@ -12,21 +27,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nom = $_POST["nom"];
     $description = $_POST["description"];
     $quantite = $_POST["quantite"]; 
-    $prix = $_POST["prix"];         
+    $prix = $_POST["prix"];
+    $vendeur_id = $_SESSION['user_id'];
 
     if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
-        $targetDir = "images/";
+        $targetDir = "uploads/";
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0777, true);
+        }
+        
         $imageName = basename($_FILES["image"]["name"]);
         $targetFile = $targetDir . time() . "_" . $imageName;
 
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-            $stmt = $conn->prepare("INSERT INTO produits (nom, description, quantite, prix, image) VALUES (?, ?, ?, ?, ?)"); 
-            $stmt->bind_param("ssids", $nom, $description, $quantite, $prix, $targetFile); 
+            $stmt = $conn->prepare("INSERT INTO produits (nom, description, quantite, prix, image, vendeur_id) VALUES (?, ?, ?, ?, ?, ?)"); 
+            $stmt->bind_param("ssidsi", $nom, $description, $quantite, $prix, $targetFile, $vendeur_id); 
 
             if ($stmt->execute()) {
-                $success = "Produit ajouté avec succès.";
+                header("Location: interfacevendeur.php?success=Produit ajouté");
+                exit();
             } else {
-                $error = "Erreur lors de l'ajout à la base de données.";
+                $error = "Erreur lors de l'ajout à la base de données: " . $conn->error;
             }
             $stmt->close();
         } else {
@@ -37,7 +58,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -148,16 +168,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <form action="" method="POST" enctype="multipart/form-data">
         <div class="mb-3">
-            <label for="nom" class="form-label"> le Nom du produit</label>
+            <label for="nom" class="form-label">Nom du produit</label>
             <input type="text" name="nom" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label for="quantite" class="form-label"> la Quantite du produit</label>
-            <input type="number" name="quantite" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label for="prix" class="form-label">le Prix du produit</label>
-            <input type="number" name="prix" class="form-control" required>
         </div>
 
         <div class="mb-3">
@@ -170,7 +182,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="number" name="prix" step="0.01" class="form-control" required>
         </div>
 
-
         <div class="mb-3">
             <label for="image" class="form-label">Image du produit</label>
             <input type="file" name="image" class="form-control" accept="image/*" required>
@@ -178,7 +189,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
-            <textarea name="description" class="form-control" rows="3"></textarea>
+            <textarea name="description" class="form-control" rows="3" required></textarea>
         </div>
 
         <button type="submit" class="btn btn-agro w-100">Ajouter le produit</button>
@@ -192,6 +203,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </footer>
 
 <!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Masquer le loader au chargement
     window.addEventListener("load", function () {

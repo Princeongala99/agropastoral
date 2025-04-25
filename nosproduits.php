@@ -16,6 +16,7 @@ $result = $conn->query($sql);
     <title>Nos Produits</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #4a8c3a;
@@ -23,7 +24,7 @@ $result = $conn->query($sql);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background-color: #f8f9fa;
         }
 
@@ -56,7 +57,9 @@ $result = $conn->query($sql);
         }
 
         .product-img {
-            height: 250px;
+            height: 200px;
+            width: 200px;
+            align-self: center;
             object-fit: cover;
         }
 
@@ -89,7 +92,7 @@ $result = $conn->query($sql);
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="accueil.php">Accueil</a></li>
                 <li class="nav-item"><a class="nav-link" href="nosproduits.php">Nos productions</a></li>
-                <li class="nav-item"><a class="nav-link" href="ajoutproduit.php">Ajouter produit</a></li>
+                <li class="nav-item"><a class="nav-link" href="connexion.php">Ajouter un productions</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
             </ul>
         </div>
@@ -112,7 +115,7 @@ $result = $conn->query($sql);
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($row['nom']); ?></h5>
                         <p class="card-text"><?php echo htmlspecialchars($row['description']); ?></p>
-                        <a href="connexion.php" class="btn btn-see-more">Voir plus</a>
+                        <a href="detailproduit.php" class="btn btn-see-more">Voir plus</a>
                     </div>
                 </div>
             </div>

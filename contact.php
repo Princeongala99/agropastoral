@@ -46,10 +46,10 @@
       <i class="fas fa-map-marker-alt"></i> Adresse : Quartier Bankoko, Ville de Bunia, RDC
     </div>
     <div class="contact-item">
-      <i class="fas fa-phone-alt"></i> Téléphone : +243 82 23 12 64 5
+      <i class="fas fa-phone-alt"></i> Téléphone : +243 83 06 63 52 2
     </div>
     <div class="contact-item">
-      <i class="fas fa-envelope"></i> Email : princeongala99@gmail.com
+      <i class="fas fa-envelope"></i> Email : lusipatricia560@gmail.com
     </div>
     <div class="contact-item">
       <i class="fas fa-clock"></i> Horaires : Lun - Ven, 08h00 à 17h00
