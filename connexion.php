@@ -42,7 +42,7 @@
             <button type="submit">Connexion</button>
         </form>
         <div class="link">
-            <p>Vous n'avez pas de compte? <a href="inscription.php">S'inscrire</a></p>
+            <p>Vous n'avez pas de compte?<a href="inscription.php">S'inscrire</a></p>
        </div>
     </div>
 </section>
