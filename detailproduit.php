@@ -8,7 +8,7 @@ if ($conn->connect_error) die("Connexion échouée: " . $conn->connect_error);
 // Requête principale du produit + vendeur (filtrée par rôle "vendeur")
 $sql = "SELECT p.*, 
                u.nom AS vendeur, 
-               u.photo AS photo_vendeur,
+               u.photo AS vendeur,
                u.id_utilisateur
         FROM produits p 
         JOIN utilisateur u ON p.id_utilisateur = u.id_utilisateur 
