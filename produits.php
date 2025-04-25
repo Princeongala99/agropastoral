@@ -117,8 +117,6 @@ $result = $conn->query($sql);
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="accueil.php">Accueil</a></li>
                 <li class="nav-item"><a class="nav-link" href="produits.php">Nos productions</a></li>
-                <li class="nav-item"><a class="nav-link" href="ajoutproduit.php">Ajouter produit</a></li>
-                <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
             </ul>
         </div>
     </div>
@@ -135,13 +133,16 @@ $result = $conn->query($sql);
     <div class="row g-4">
         <?php while ($row = $result->fetch_assoc()): ?>
             <div class="col-md-4">
-                <div class="card product-card">
-                    <img src="<?php echo htmlspecialchars($row['image']); ?>" class="card-img-top product-img" alt="<?php echo htmlspecialchars($row['nom']); ?>">
+                <div class="card product-card shadow-sm rounded">
+                    <img src="<?php echo htmlspecialchars($row['image']); ?>" class="card-img-top product-img rounded-top" alt="<?php echo htmlspecialchars($row['nom']); ?>">
                     <div class="card-body">
-                        <h5 class="card-title"><?php echo htmlspecialchars($row['nom']); ?></h5>
-                        <p class="card-text"><?php echo htmlspecialchars($row['description']); ?></p>
-                        <a href="#" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editProductModal" data-id="<?php echo $row['id']; ?>" data-nom="<?php echo $row['nom']; ?>" data-description="<?php echo $row['description']; ?>" data-image="<?php echo $row['image']; ?>">Modifier</a>
-                        <a href="?delete=<?php echo $row['id']; ?>" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">Supprimer</a>
+                        <h5 class="card-title text-truncate"><?php echo htmlspecialchars($row['nom']); ?></h5>
+                        <p class="card-text text-muted"><?php echo htmlspecialchars($row['description']); ?></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary"><?php echo htmlspecialchars($row['prix']); ?> Fc</span>
+                            <span class="badge bg-success"><?php echo htmlspecialchars($row['quantite']); ?> en stock</span>
+                        </div>
+                        <a href="connexion.php" class="btn btn-warning mt-3 w-100">Savoir plus</a>           
                     </div>
                 </div>
             </div>
@@ -154,10 +155,7 @@ $result = $conn->query($sql);
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="POST" enctype="multipart/form-data">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editProductModalLabel">Modifier le produit</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+
                 <div class="modal-body">
                     <input type="hidden" name="id" id="editId">
                     <div class="mb-3">

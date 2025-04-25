@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -36,7 +38,7 @@
 <section class="hero-section text-center">
     <div class="form-container">
         <h2 class="form-title">Connexion</h2> <!-- Titre du formulaire -->
-        <form method="POST" action="traitement_inscription.php">
+        <form method="POST" action="traitement_connexion.php">
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
             <button type="submit">Connexion</button>

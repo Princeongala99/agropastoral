@@ -38,8 +38,13 @@
         <h2 class="form-title">Créer un compte</h2> 
         <form method="POST" action="traitement_inscription.php">
             <input type="text" name="nom" placeholder="Nom" required>
-            <input type="text" name="prenom" placeholder="Prénom" required>
+            <input type="text" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
+            <input type="text" name="telephone" placeholder="Telephone" required>
+            <input type="text" name="adresse" placeholder="Adresse" required>
+            <select id="role" name="role" required>
+               <option value="acheteur" selected>Acheteur</option>
+            </select> 
             <button type="submit">S'inscrire</button>
         </form>
         <div class="link">
