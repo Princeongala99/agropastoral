@@ -34,21 +34,21 @@
         </div>
     </div>
 </nav>
-<form action="traitement_connexion.php" method="POST">
-    <section class="hero-section text-center">
-        <div class="form-container">
-            <h2 class="form-title">Connexion</h2> <!-- Titre du formulaire -->
-            <form method="POST" action="traitement_inscription.php">
-                <input type="text" name="nom" placeholder="Nom" required>
-                <input type="password" name="password" placeholder="Mot de passe" required>
-                <button type="submit">Connexion</button>
-            </form>
-            <div class="link">
-                <p>Vous n'avez pas de compte? ?   <a href="inscription.php">S'inscrire</a></p>
-            </div>
+
+<section class="hero-section text-center">
+    <div class="form-container">
+        <h2 class="form-title">Connexion</h2> <!-- Titre du formulaire -->
+        <form method="POST" action="traitement_connexion.php">
+            <input type="text" name="nom" placeholder="Nom" required>
+            <input type="password" name="password" placeholder="Mot de passe" required>
+            <button type="submit">Connexion</button>
+        </form>
+        <div class="link">
+            <p>Vous n'avez pas de compte? ?   <a href="inscription.php">S'inscrire</a></p>
         </div>
-    </section>
-</form>
+    </div>
+</section>
+
 <footer class="text-center mt-5">
   <p>&copy; 2025 AgroPastoral. Tous droits réservés.</p>
 </footer>
@@ -58,3 +58,4 @@
 
 </body>
 </html>
+ 
