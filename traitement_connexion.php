@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 session_start();
 
@@ -65,3 +66,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: connexion.php');
     exit();
 }
+=======
+>>>>>>> 06eec737021e4d29da0f6238174d93de20e4212c
