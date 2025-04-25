@@ -209,7 +209,7 @@
                                 <input type="text" class="form-control" id="nom" name="nom" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="prix" class="form-label">Prix (€)</label>
+                                <label for="prix" class="form-label">Prix (fc)</label>
                                 <input type="number" step="0.01" class="form-control" id="prix" name="prix" required>
                             </div>
                         </div>
