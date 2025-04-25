@@ -6,11 +6,6 @@ if (!isset($_SESSION['panier'])) {
     $_SESSION['panier'] = [];
 }
 
-// Calculer le total
-$total = 0;
-foreach ($_SESSION['panier'] as $item) {
-    $total += $item['prix'] * $item['quantite'];
-}
 // Gérer la suppression d'un article du panier
 if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -21,6 +16,25 @@ if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id
     }
 }
 
+// Regrouper les articles par nom de produit
+$groupes = [];
+$total = 0;
+foreach ($_SESSION['panier'] as $key => $item) {
+    $total += $item['prix'] * $item['quantite'];
+    $nom = $item['nom'];
+    if (!isset($groupes[$nom])) {
+        $groupes[$nom] = [
+            'infos' => $item,
+            'quantite' => $item['quantite'],
+            'total' => $item['prix'] * $item['quantite'],
+            'keys' => [$key]
+        ];
+    } else {
+        $groupes[$nom]['quantite'] += $item['quantite'];
+        $groupes[$nom]['total'] += $item['prix'] * $item['quantite'];
+        $groupes[$nom]['keys'][] = $key;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -29,7 +43,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id
     <meta charset="UTF-8">
     <title>Mon Panier - AgroPastoral</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -57,16 +70,18 @@ if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id
         <div class="alert alert-warning">Votre panier est vide.</div>
     <?php else: ?>
         <div class="row g-4">
-            <?php foreach ($_SESSION['panier'] as $key => $item): ?>
+            <?php foreach ($groupes as $nom => $groupe): ?>
                 <div class="col-md-4">
                     <div class="card h-100 shadow-sm">
-                        <img src="<?php echo htmlspecialchars($item['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($item['nom']); ?>">
+                        <img src="<?= htmlspecialchars($groupe['infos']['image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($nom) ?>">
                         <div class="card-body d-flex flex-column">
-                            <h5 class="card-title"><?php echo htmlspecialchars($item['nom']); ?></h5>
-                            <p class="card-text mb-1">Prix unitaire : <strong><?php echo htmlspecialchars($item['prix']); ?> €</strong></p>
-                            <p class="card-text mb-1">Quantité : <strong><?php echo htmlspecialchars($item['quantite']); ?></strong></p>
-                            <p class="card-text text-muted">Total : <strong><?php echo $item['prix'] * $item['quantite']; ?> €</strong></p>
-                            <a href="panier.php?action=supprimer&id=<?php echo $key; ?>" class="btn btn-outline-danger mt-auto"><i class="fas fa-trash-alt"></i> Supprimer</a>
+                            <h5 class="card-title"><?= htmlspecialchars($nom) ?></h5>
+                            <p class="card-text mb-1">Prix unitaire : <strong><?= htmlspecialchars($groupe['infos']['prix']) ?> Fc</strong></p>
+                            <p class="card-text mb-1">Quantité : <strong><?= $groupe['quantite'] ?></strong></p>
+                            <p class="card-text text-muted">Total : <strong><?= $groupe['total'] ?> Fc</strong></p>
+                            <?php foreach ($groupe['keys'] as $key): ?>
+                                <a href="panier.php?action=supprimer&id=<?= $key ?>" class="btn btn-outline-danger btn-sm mt-1"><i class="fas fa-trash-alt"></i> Supprimer</a>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                 </div>
@@ -74,19 +89,17 @@ if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id
         </div>
 
         <div class="text-end mt-4">
-            <h4>Total à payer : <strong><?php echo $total; ?> €</strong></h4>
-            <a href="commander.php" class="btn btn-success btn-lg mt-2"><i class="fas fa-credit-card"></i> Commander</a>
+            <h4>Total à payer : <strong><?= $total ?> Fc</strong></h4>
+            <a href="gestion_commandes.php" class="btn btn-success btn-lg mt-2"><i class="fas fa-credit-card"></i> Commander</a>
         </div>
     <?php endif; ?>
 </div>
 
 <footer class="text-center bg-light py-3 mt-5">
-    <p>&copy; <?php echo date('Y'); ?> AgroPastoral - Panier</p>
+    <p>&copy; <?= date('Y') ?> AgroPastoral - Panier</p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const deleteLinks = document.querySelectorAll('a[href*="action=supprimer"]');
@@ -99,4 +112,5 @@ if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id
         });
     });
 </script>
-
+</body>
+</html>

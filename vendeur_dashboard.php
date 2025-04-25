@@ -17,7 +17,7 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Vérifier les infos de l'utilisateur
-    $stmt = $pdo->prepare("SELECT role, paiement_effectue, abonnement_actif, nom, date_abonnement FROM utilisateur WHERE id_utilisateur = ?");
+    $stmt = $pdo->prepare("SELECT role, paiement_effectue, abonnement_actif, nom, photo, date_abonnement FROM utilisateur WHERE id_utilisateur = ?");
     $stmt->execute([$_SESSION['id_utilisateur']]);
     $user = $stmt->fetch();
 
@@ -29,6 +29,7 @@ try {
     $_SESSION['nom'] = $user['nom'];
     $_SESSION['abonnement_actif'] = $user['abonnement_actif'];
     $_SESSION['paiement_effectue'] = $user['paiement_effectue'];
+    $_SESSION['photo'] = $user['photo'];  // Ajouter la photo dans la session
 
     $abonne = ($user['paiement_effectue'] == 1 && $user['abonnement_actif'] == 1);
 
@@ -82,18 +83,25 @@ try {
         .dashboard-btn {
             min-width: 250px;
         }
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
     <div class="container">
-        <a class="navbar-brand" >AgroPastoral</a>
+        <a class="navbar-brand" href="#">AgroPastoral</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+                <!-- Chat et notifications restent accessibles même après déconnexion -->
                 <li class="nav-item"><a class="nav-link" href="chat.php"><i class="fas fa-comments"></i> Chat</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarNotifications" data-bs-toggle="dropdown">
@@ -112,16 +120,35 @@ try {
                         <?php endif; ?>
                     </ul>
                 </li>
+                <!-- Affichage de la photo de profil si l'utilisateur est connecté -->
+                <?php if (isset($_SESSION['id_utilisateur']) && !empty($_SESSION['photo'])): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="modifier_profil.php">
+                            <img src="uploads/<?= htmlspecialchars($_SESSION['photo']); ?>" alt="Photo de profil" class="rounded-circle" width="40" height="40">
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="connexion.php"><i class="fas fa-user-circle"></i> Connexion</a>
+                    </li>
+                <?php endif; ?>
                 <li class="nav-item"><a class="nav-link" href="deconnexion.php"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
+
 <section class="hero-section text-center">
     <div class="container">
         <h1 class="display-5">Bienvenue <?= htmlspecialchars($_SESSION['nom']); ?> 👋</h1>
         <p class="lead">Votre espace personnel AgroPastoral</p>
+
+        <?php if ($_SESSION['photo']): ?>
+            <img src="path/to/uploads/<?= htmlspecialchars($_SESSION['photo']); ?>" alt="Photo de profil" class="profile-photo">
+        <?php else: ?>
+            <img src="path/to/default-profile.jpg" alt="Photo de profil par défaut" class="profile-photo">
+        <?php endif; ?>
 
         <?php if ($abonne && $jours_restants !== null): ?>
             <?php if ($jours_restants <= 5): ?>
@@ -139,7 +166,7 @@ try {
         <div class="d-flex justify-content-center gap-4 flex-wrap mt-4">
 
             <!-- Fonctions acheteur toujours visibles -->
-            <a href="parcourir_produit.php" class="btn btn-outline-light dashboard-btn">
+            <a href="parcourir_produits.php" class="btn btn-outline-light dashboard-btn">
                 <i class="fas fa-search me-2"></i>Parcourir les produits
             </a>
             <a href="mes_commandes.php" class="btn btn-outline-light dashboard-btn">
