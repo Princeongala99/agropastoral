@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Paramètres de connexion à la base de données
+// Paramètres de connexion à la bd
 $host = 'localhost';
 $user = 'root';
 $pass = '';
