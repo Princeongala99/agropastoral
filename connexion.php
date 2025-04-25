@@ -31,17 +31,9 @@
         </div>
     </div>
 </nav>
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 <section class="hero-section text-center">
     <div class="form-container">
-=======
-
-<section class="hero-section text-center">
-    <div class="form-container">
-
->>>>>>> 17612fcb89b0f88beb404ae003898b24eddd04fc
         <h2 class="form-title">Connexion</h2> <!-- Titre du formulaire -->
         <form method="POST" action="traitement_connexion.php">
             <input type="text" name="nom" placeholder="Nom" required>
@@ -54,7 +46,6 @@
     </div>
 </section>
 
->>>>>>> 17612fcb89b0f88beb404ae003898b24eddd04fc
 <footer class="text-center mt-5">
   <p>&copy; 2025 AgroPastoral. Tous droits réservés.</p>
 </footer>
