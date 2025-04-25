@@ -77,8 +77,8 @@
     animation: fadeIn 1s ease-in-out;
 }
 
-/* Slide-in effet pour chaque champ */
-input, button {
+
+input,select, button {
     opacity: 0;
     transform: translateY(20px);
     animation: slideUp 0.6s forwards;
@@ -165,7 +165,6 @@ button:hover {
             border-radius: 8px;
             border: 1px solid #ccc;
             font-size: 1em;
-
         }
 
         button {

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -35,12 +37,6 @@
 <section class="hero-section text-center">
     <div class="form-container">
         <h2 class="form-title">Connexion</h2> <!-- Titre du formulaire -->
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger">
-                <?= htmlspecialchars($_SESSION['error']) ?>
-                <?php unset($_SESSION['error']); ?>
-            </div>
-        <?php endif; ?>
         <form method="POST" action="traitement_connexion.php">
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
