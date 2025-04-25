@@ -49,7 +49,7 @@
         <div class="container">
             <h1 class="display-4 fw-bold mb-3">Bienvenue à la Plateforme AgroPastorale</h1>
             <p class="lead mb-4">Découvrez notre engagement pour une agriculture durable et respectueux de l'environnement.</p>
-            <a href="produits.php" class="btn btn-agro btn-lg">Découvrir nos produits</a>
+            <a href="nosproduits.php" class="btn btn-agro btn-lg">Découvrir nos produits</a>
         </div>
     </section>
 
