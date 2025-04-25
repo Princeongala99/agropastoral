@@ -1,107 +1,50 @@
 <?php
-session_start();
+// Connexion à la base de données
+$host = 'localhost';
+$dbname = 'agropastoral';
+$username = 'root';
+$password = ''; // à adapter selon ton cas
 
-$dbHost = "localhost";
-$dbUser = "root";
-$dbPass = "";
-$dbName = "agropastoral";
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    if (isset($_POST['nom'], $_POST['email'], $_POST['password'], $_POST['tel'], $_POST['address']) &&
-        !empty(trim($_POST['nom'])) &&
-        !empty(trim($_POST['email'])) &&
-        !empty(trim($_POST['password'])) &&
-        !empty(trim($_POST['tel'])) &&
-        !empty(trim($_POST['address'])))
-    {
-        $nom = trim($_POST['nom']);
-        $email = trim($_POST['email']);
-        $password = trim($_POST['password']);
-        $tel = trim($_POST['tel']);
-        $address = trim($_POST['address']);
-
-        // Le rôle est défini automatiquement comme "acheteur"
-        $role = "acheteur";
-        
-        // Validation du mot de passe
-        if (strlen($password) < 4) {
-            $_SESSION['error_message'] = "Le mot de passe doit contenir au moins 4 caractères.";
-            header("Location: inscription.php");
-            exit;
-        }
-        
-        // Validation de l'email
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $_SESSION['error_message'] = "L'adresse email n'est pas valide.";
-            header("Location: inscription.php");
-            exit;
-        }
-        
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-        if ($hashed_password === false) {
-            error_log("Password hashing failed for user: " . $email);
-            $_SESSION['error_message'] = "Une erreur technique est survenue lors de la création du compte.";
-            header("Location: inscription.php");
-            exit;
-        }
-
-        $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
-
-        if ($conn->connect_error) {
-            error_log("Database Connection Error: " . $conn->connect_error);
-            $_SESSION['error_message'] = "Erreur de connexion à la base de données. Veuillez réessayer plus tard.";
-            header("Location: inscription.php");
-            exit;
-        }
-
-        $conn->set_charset("utf8mb4");
-
-        $sql = "INSERT INTO utilisateur (nom, email, mot_de_passe_hash, role, telephone, adresse) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        
-        if ($stmt === false) {
-            error_log("Prepare statement failed: " . $conn->error);
-            $_SESSION['error_message'] = "Une erreur technique est survenue (prepare).";
-            header("Location: inscription.php");
-            $conn->close();
-            exit;
-        }
-
-        $stmt->bind_param("ssssss", $nom, $email, $hashed_password, $role, $tel, $address);
-
-        if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Inscription réussie !";
-
-            // Redirection selon le rôle
-            if (strtolower($role) === 'vendeur') {
-                header("Location: abonnement.php");
-            } else {
-                header("Location: connexion.php");
-            }
-
-        } else {
-            if ($conn->errno == 1062) {
-                $_SESSION['error_message'] = "Cette adresse email est déjà utilisée.";
-            } else {
-                error_log("Execute statement failed: " . $stmt->error);
-                $_SESSION['error_message'] = "Une erreur est survenue lors de l'inscription.";
-            }
-            header("Location: inscription.php");
-        }
-
-        $stmt->close();
-        $conn->close();
-        exit;
-
-    } else {
-        $_SESSION['error_message'] = "Veuillez remplir tous les champs obligatoires.";
-        header("Location: inscription.php");
-        exit;
-    }
-
-} else {
-    header("Location: inscription.php");
-    exit;
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion à la base de données : " . $e->getMessage());
 }
+
+// Vérifier si le formulaire est soumis
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Récupérer les valeurs du formulaire
+    $nom = htmlspecialchars($_POST['nom']);
+    $email = htmlspecialchars($_POST['email']);
+    $motdepasse = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $telephone = htmlspecialchars($_POST['telephone']);
+    $adresse = htmlspecialchars($_POST['adresse']);
+    $role = htmlspecialchars($_POST['role']);
+
+    // Requête d'insertion
+    $sql = "INSERT INTO utilisateur (nom, email, mot_de_passe_hash, telephone, adresse, role)
+            VALUES (:nom, :email, :motdepasse, :telephone, :adresse, :role)";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':nom', $nom);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':motdepasse', $motdepasse);
+    $stmt->bindParam(':telephone', $telephone);
+    $stmt->bindParam(':adresse', $adresse);
+    $stmt->bindParam(':role', $role);
+
+    // Exécuter la requête
+    if ($stmt->execute()) {
+        // Rediriger après une inscription réussie
+        header('Location: connexion.php');
+        exit;
+    } else {
+        // Si l'insertion échoue
+        die("Erreur lors de l'inscription.");
+    }
+} else {
+    // Accès non autorisé
+    die("Accès non autorisé.");
+}
+?>

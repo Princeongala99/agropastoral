@@ -75,7 +75,7 @@
 
         footer {
     background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
-    color: black; /* Texte blanc pour un bon contraste */
+    color: white; /* Texte blanc pour un bon contraste */
     padding: 40px 0 20px;
     text-align: center;
 }
@@ -98,8 +98,7 @@ footer p {
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="accueil.php">Accueil</a></li>
-                <li class="nav-item"><a class="nav-link" href="nosproduits.php">Nos produits</a></li>
-                <li class="nav-item"><a class="nav-link" href="ajoutproduit.php">Ajouter un produit</a></li>
+                <li class="nav-item"><a class="nav-link" href="produits.php">Nos produits</a></li>
                 <li class="nav-item"><a class="nav-link active" href="savoirplus.php">En savoir plus</a></li>
             </ul>
         </div>

@@ -42,11 +42,11 @@
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="text" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
-        </select>
-        <input type="text" name="tel" placeholder="votre mun de telephone" required>            
-        <input type="text" name="address" placeholder="votre adresse" required>
-
-
+            <input type="text" name="telephone" placeholder="Telephone" required>
+            <input type="text" name="adresse" placeholder="Adresse" required>
+            <select id="role" name="role" required>
+               <option value="acheteur" selected>Acheteur</option>
+            </select> 
             <button type="submit">S'inscrire</button>
         </form>
         <div class="link">
