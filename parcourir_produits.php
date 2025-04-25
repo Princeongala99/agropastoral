@@ -1,8 +1,9 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['id_utilisateur']) || $_SESSION['role'] !== 'acheteur'|| $_SESSION['role'] !== 'vendeur') {
-    header('Location: parcourir_produits.php');
+// Vérifie que l'utilisateur est connecté et qu'il a un rôle valide
+if (!isset($_SESSION['id_utilisateur']) || !in_array($_SESSION['role'], ['acheteur', 'vendeur'])) {
+    header('Location: connexion.php');
     exit();
 }
 
@@ -19,23 +20,20 @@ try {
     die("Erreur de connexion : " . $e->getMessage());
 }
 
-// Récupérer les produits de la base de données
+// Récupérer les produits
 $stmt_products = $pdo->prepare("SELECT id_produit, nom, description, prix, quantite, image FROM produits ORDER BY nom ASC");
 $stmt_products->execute();
 $products = $stmt_products->fetchAll();
 
-// Récupérer les notifications non lues
+// Récupérer les notifications actives pour ce rôle
 $stmt_notifications = $pdo->prepare("
     SELECT id, titre, message, date_creation, active 
     FROM notifications 
-    WHERE id = :role AND active = 1 
+    WHERE role = :role AND active = 1 
     ORDER BY date_creation DESC
 ");
 $stmt_notifications->execute(['role' => $_SESSION['role']]);
-
 $notifications = $stmt_notifications->fetchAll();
-
-// Nombre de notifications non lues
 $unread_notifications_count = count($notifications);
 ?>
 
@@ -46,10 +44,13 @@ $unread_notifications_count = count($notifications);
     <title>Parcourir les produits - AgroPastoral</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Bootstrap + Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <link rel="stylesheet" href="style.css">
     <style>
         .hero-section {
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
@@ -84,11 +85,11 @@ $unread_notifications_count = count($notifications);
                     <a class="nav-link" href="chat.php"><i class="fas fa-comments"></i> Chat</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarNotifications" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarNotifications" role="button" data-bs-toggle="dropdown">
                         <i class="fas fa-bell"></i>
                         <span class="badge bg-danger" id="notificationBadge"><?= $unread_notifications_count ?></span>
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarNotifications" id="notificationMenu">
+                    <ul class="dropdown-menu" id="notificationMenu">
                         <?php if ($unread_notifications_count > 0): ?>
                             <?php foreach ($notifications as $notification): ?>
                                 <li><a class="dropdown-item" href="#">
@@ -111,7 +112,7 @@ $unread_notifications_count = count($notifications);
 
 <section class="hero-section text-center">
     <div class="container">
-        <h1 class="display-5">Bienvenue, <?php echo htmlspecialchars($_SESSION['nom']); ?> 🛒</h1>
+        <h1 class="display-5">Bienvenue, <?= htmlspecialchars($_SESSION['nom']) ?> 🛒</h1>
         <p class="lead">Explorez les produits disponibles et passez vos commandes facilement</p>
     </div>
 </section>
@@ -121,15 +122,15 @@ $unread_notifications_count = count($notifications);
         <?php foreach ($products as $product): ?>
             <div class="col-md-4">
                 <div class="card product-card shadow-sm rounded">
-                    <img src="<?php echo htmlspecialchars($product['image']); ?>" class="card-img-top product-img rounded-top" alt="<?php echo htmlspecialchars($product['nom']); ?>">
+                    <img src="<?= htmlspecialchars($product['image']) ?>" class="card-img-top product-img" alt="<?= htmlspecialchars($product['nom']) ?>">
                     <div class="card-body">
-                        <h5 class="card-title text-truncate"><?php echo htmlspecialchars($product['nom']); ?></h5>
-                        <p class="card-text text-muted"><?php echo htmlspecialchars($product['description']); ?></p>
+                        <h5 class="card-title text-truncate"><?= htmlspecialchars($product['nom']) ?></h5>
+                        <p class="card-text text-muted"><?= htmlspecialchars($product['description']) ?></p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge bg-primary"><?php echo htmlspecialchars($product['prix']); ?> Fc</span>
-                            <span class="badge bg-success"><?php echo htmlspecialchars($product['quantite']); ?> en stock</span>
+                            <span class="badge bg-primary"><?= htmlspecialchars($product['prix']) ?> Fc</span>
+                            <span class="badge bg-success"><?= htmlspecialchars($product['quantite']) ?> en stock</span>
                         </div>
-                        <a href="details_produit.php?id=<?php echo $product['id_produit']; ?>" class="btn btn-warning mt-3 w-100">Savoir plus</a>
+                        <a href="details_produit.php?id=<?= $product['id_produit'] ?>" class="btn btn-warning mt-3 w-100">Savoir plus</a>
                     </div>
                 </div>
             </div>
@@ -138,25 +139,27 @@ $unread_notifications_count = count($notifications);
 </div>
 
 <footer class="text-center bg-light py-3 mt-5">
-    <p>&copy; <?php echo date('Y'); ?> AgroPastoral - Espace Acheteur</p>
+    <p>&copy; <?= date('Y') ?> AgroPastoral - Espace Acheteur</p>
 </footer>
 
+<!-- Bootstrap Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- Script Notifications Dynamiques -->
 <script>
     function updateNotifications() {
         $.ajax({
-            url: 'get_notifications.php', // Vous devez créer ce fichier PHP pour récupérer les notifications non lues
+            url: 'get_notifications.php',
             type: 'GET',
             success: function(data) {
                 const notifications = JSON.parse(data);
                 const unreadCount = notifications.length;
-                $('#notificationBadge').text(unreadCount); // Mise à jour du badge avec le nombre de notifications
-
+                $('#notificationBadge').text(unreadCount);
                 const notificationMenu = $('#notificationMenu');
-                notificationMenu.empty(); // Vider les anciennes notifications
+                notificationMenu.empty();
+
                 if (unreadCount > 0) {
-                    notifications.forEach(function(notification) {
+                    notifications.forEach(notification => {
                         notificationMenu.append(`
                             <li><a class="dropdown-item" href="#">
                                 <strong>${notification.titre}:</strong> ${notification.message}
@@ -170,13 +173,8 @@ $unread_notifications_count = count($notifications);
         });
     }
 
-    // Mettre à jour les notifications toutes les 10 secondes
     setInterval(updateNotifications, 10000);
-
-    // Récupérer immédiatement les notifications au chargement de la page
-    $(document).ready(function() {
-        updateNotifications();
-    });
+    $(document).ready(updateNotifications);
 </script>
 
 </body>

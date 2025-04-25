@@ -82,23 +82,23 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     </div>
 </nav>
 
-<section>
-<div class="container py-4">
-    <h2><?php echo htmlspecialchars($product['nom']); ?></h2>
-    <p><strong>Description:</strong> <?php echo htmlspecialchars($product['description']); ?></p>
-    <p><strong>Prix:</strong> <?php echo htmlspecialchars($product['prix']); ?> EUR</p>
-    <p><strong>Quantité disponible:</strong> <?php echo htmlspecialchars($product['quantite']); ?></p>
-    <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['nom']); ?>" class="img-fluid">
+<section style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <div class="container py-4" style="max-width: 600px;">
+        <h2><?php echo htmlspecialchars($product['nom']); ?></h2>
+        <p><strong>Description:</strong> <?php echo htmlspecialchars($product['description']); ?></p>
+        <p><strong>Prix:</strong> <?php echo htmlspecialchars($product['prix']); ?> EUR</p>
+        <p><strong>Quantité disponible:</strong> <?php echo htmlspecialchars($product['quantite']); ?></p>
+        <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['nom']); ?>" class="img-fluid mb-3">
 
-    <!-- Formulaire pour ajouter au panier -->
-    <form method="POST">
-        <div class="mb-3">
-            <label for="quantite" class="form-label">Quantité</label>
-            <input type="number" name="quantite" class="form-control" min="1" max="<?php echo $product['quantite']; ?>" value="1" required>
-        </div>
-        <button type="submit" name="ajouter_panier" class="btn btn-primary">Ajouter au panier</button>
-    </form>
-</div>
+        <!-- Formulaire pour ajouter au panier -->
+        <form method="POST">
+            <div class="mb-3">
+                <label for="quantite" class="form-label">Quantité</label>
+                <input type="number" name="quantite" class="form-control" min="1" max="<?php echo $product['quantite']; ?>" value="1" required>
+            </div>
+            <button type="submit" name="ajouter_panier" class="btn btn-primary">Ajouter au panier</button>
+        </form>
+    </div>
 </section>
 
 <footer class="text-center bg-light py-3 mt-5">
