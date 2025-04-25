@@ -42,7 +42,7 @@
             <input type="text" name="nom" placeholder="Votre nom" required>
             <input type="text" name="transaction" placeholder="Numéro de transaction" required>
             <input type="number" name="montant" placeholder="Montant" required>
-            <button type="submit">Confirmer</button>
+            <button type="submit">Confirmer.</button>
         </form>
     </div>
 </section>
