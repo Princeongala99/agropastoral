@@ -11,6 +11,39 @@
 
     <link rel="stylesheet" href="style.css"> 
 
+    <style>
+        .photo-upload {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .photo-preview-wrapper {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin: auto;
+            cursor: pointer;
+            border: 2px solid #ccc;
+        }
+
+        .photo-preview-wrapper img,
+        .photo-preview-wrapper i {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            font-size: 60px;
+            color: #6c757d;
+        }
+
+        .photo-preview-wrapper input[type="file"] {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
@@ -39,6 +72,14 @@
     <div class="form-container">
         <h2 class="form-title">Créer un compte</h2> 
         <form method="POST" action="traitement_inscription.php" enctype="multipart/form-data">
+            <div class="photo-upload">
+                <div class="photo-preview-wrapper" onclick="triggerFileInput()">
+                    <img id="photoPreview" src="" alt="Aperçu" style="display: none;">
+                    <i id="defaultIcon" class="fas fa-user"></i>
+                </div>
+                <input type="file" id="photoInput" name="photo" accept="image/*" onchange="previewPhoto()" style="display: none;">
+                <p class="mt-2"></p>
+            </div>
             <input type="text" name="nom" placeholder="Nom" required>
             <input type="text" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
@@ -46,13 +87,8 @@
             <input type="text" name="adresse" placeholder="Adresse" required>
             <select id="role" name="role" required>
                <option value="acheteur" selected>Acheteur</option>
-               <option value="vendeur" selected>Vendeur</option>
+               <option value="vendeur">Vendeur</option>
             </select> 
-            <div class="photo-upload">
-                <label for="photo">Photo (facultatif)</label>
-                <input type="file" name="photo" id="photo" accept="image/*">
-            </div>
-
             <button type="submit">S'inscrire</button>
         </form>
         <div class="link">
@@ -61,14 +97,36 @@
     </div>
 </section>
 
-
-
 <footer class="text-center mt-5">
   <p>&copy; 2025 AgroPastoral. Tous droits réservés.</p>
 </footer>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function triggerFileInput() {
+        document.getElementById('photoInput').click();
+    }
+
+    function previewPhoto() {
+        const file = document.getElementById('photoInput').files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const photoPreview = document.getElementById('photoPreview');
+            const defaultIcon = document.getElementById('defaultIcon');
+
+            photoPreview.src = e.target.result;
+            photoPreview.style.display = 'block';
+            defaultIcon.style.display = 'none';
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
 
 </body>
 </html>

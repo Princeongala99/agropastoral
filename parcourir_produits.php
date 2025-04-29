@@ -66,8 +66,10 @@ $unread_notifications_count = count($notifications);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .product-img {
-            object-fit: cover;
+            width: 200px;
             height: 200px;
+            align-self: center;
+
         }
     </style>
 </head>

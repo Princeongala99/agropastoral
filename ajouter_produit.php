@@ -1,6 +1,8 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "agropastoral");
+session_start();
 
+// Connexion à la base de données
+$conn = new mysqli("localhost", "root", "", "agropastoral");
 if ($conn->connect_error) {
     die("Connexion échouée : " . $conn->connect_error);
 }
@@ -8,11 +10,17 @@ if ($conn->connect_error) {
 $success = "";
 $error = "";
 
+// Vérifie que l'utilisateur est connecté
+if (!isset($_SESSION["id_utilisateur"])) {
+    die("Utilisateur non connecté. Veuillez vous connecter pour ajouter un produit.");
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nom = $_POST["nom"];
     $description = $_POST["description"];
     $prix = $_POST["prix"];
     $stock = $_POST["stock"];
+    $id_utilisateur = $_SESSION["id_utilisateur"];
 
     if (isset($_FILES["image"]) && $_FILES["image"]["error"] == 0) {
         $targetDir = "images/";
@@ -20,13 +28,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $targetFile = $targetDir . time() . "_" . $imageName;
 
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-            $stmt = $conn->prepare("INSERT INTO produits (nom, description, prix, quantite, image) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("ssdis", $nom, $description, $prix, $stock, $targetFile);
+            $stmt = $conn->prepare("INSERT INTO produits (nom, description, prix, quantite, image, id_utilisateur) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssdisi", $nom, $description, $prix, $stock, $targetFile, $id_utilisateur);
 
             if ($stmt->execute()) {
                 $success = "Produit ajouté avec succès.";
             } else {
-                $error = "Erreur lors de l'ajout à la base de données.";
+                $error = "Erreur lors de l'ajout à la base de données : " . $stmt->error;
             }
             $stmt->close();
         } else {
