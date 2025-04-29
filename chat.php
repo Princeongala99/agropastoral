@@ -22,33 +22,49 @@ if (!isset($_SESSION['id_utilisateur'])) {
 
 $current_user = $_SESSION['id_utilisateur'];
 
+// Fonctions pour rôle
+function getRoleBadgeClass($role) {
+    switch (strtolower($role)) {
+        case 'admin': return 'bg-danger';
+        case 'vendeur': return 'bg-success';
+        case 'acheteur': return 'bg-primary';
+        default: return 'bg-secondary';
+    }
+}
+
+function getRoleIcon($role) {
+    switch (strtolower($role)) {
+        case 'admin': return '👑';
+        case 'vendeur': return '📦';
+        case 'acheteur': return '🛒';
+        default: return '👤';
+    }
+}
+
 // Récupérer les infos de l'utilisateur
 $stmt = $pdo->prepare("SELECT abonnement_actif, paiement_effectue FROM utilisateur WHERE id_utilisateur = ?");
 $stmt->execute([$current_user]);
 $user = $stmt->fetch();
 
-// Vérifie si l'abonnement est en attente (payé mais pas encore activé)
-if ($user['paiement_effectue'] && !$user['abonnement_actif']) {
-    $abonnement_en_attente = true;
-} else {
-    $abonnement_en_attente = false;
-}
+$abonnement_en_attente = ($user['paiement_effectue'] && !$user['abonnement_actif']);
 
-// Récupérer la liste des autres utilisateurs
-$stmt = $pdo->prepare("SELECT id_utilisateur, nom FROM utilisateur WHERE id_utilisateur != ?");
+// Récupérer la liste des autres utilisateurs AVEC rôle
+$stmt = $pdo->prepare("SELECT id_utilisateur, nom, role FROM utilisateur WHERE id_utilisateur != ?");
 $stmt->execute([$current_user]);
 $utilisateurs = $stmt->fetchAll();
 
 // Récupérer l'utilisateur sélectionné
 $receiver_id = isset($_GET['user']) ? (int)$_GET['user'] : 0;
 $receiver_name = '';
+$receiver_role = '';
 
 if ($receiver_id) {
-    $stmt = $pdo->prepare("SELECT nom FROM utilisateur WHERE id_utilisateur = ?");
+    $stmt = $pdo->prepare("SELECT nom, role FROM utilisateur WHERE id_utilisateur = ?");
     $stmt->execute([$receiver_id]);
     $receiver = $stmt->fetch();
     if ($receiver) {
         $receiver_name = $receiver['nom'];
+        $receiver_role = $receiver['role'];
     }
 }
 ?>
@@ -99,6 +115,9 @@ if ($receiver_id) {
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="chat.php">Chat Online</a></li>
             </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="vendeur_dashboard.php">Retour</a></li>
+            </ul>
         </div>
     </div>
 </nav>
@@ -110,7 +129,10 @@ if ($receiver_id) {
         <ul class="list-group">
             <?php foreach ($utilisateurs as $u): ?>
                 <a href="chat.php?user=<?= $u['id_utilisateur'] ?>" class="list-group-item <?= ($receiver_id == $u['id_utilisateur']) ? 'active' : '' ?>">
-                    <?= htmlspecialchars($u['nom']) ?>
+                    <?= getRoleIcon($u['role']) ?> <?= htmlspecialchars($u['nom']) ?>
+                    <span class="badge <?= getRoleBadgeClass($u['role']) ?> ms-2">
+                        <?= htmlspecialchars($u['role']) ?>
+                    </span>
                 </a>
             <?php endforeach; ?>
         </ul>
@@ -123,7 +145,13 @@ if ($receiver_id) {
                 <p>Votre abonnement a été payé mais il n'a pas encore été activé par l'administrateur. Vous ne pouvez pas utiliser le chat pour le moment.</p>
             </div>
         <?php elseif ($receiver_id): ?>
-            <h5 class="text-success">Discussion avec <strong><?= htmlspecialchars($receiver_name) ?></strong></h5>
+            <h5 class="text-success">
+                Discussion avec 
+                <strong><?= getRoleIcon($receiver_role) ?> <?= htmlspecialchars($receiver_name) ?></strong>
+                <span class="badge <?= getRoleBadgeClass($receiver_role) ?> ms-2">
+                    <?= htmlspecialchars($receiver_role) ?>
+                </span>
+            </h5>
             <div id="chat-box" style="height: 300px; overflow-y: auto; margin-bottom: 15px;"></div>
             <div class="input-group">
                 <input type="text" id="message-input" class="form-control" placeholder="Votre message...">
@@ -178,7 +206,7 @@ function loadMessages() {
         });
 }
 
-if (receiverId && !<?= $abonnement_en_attente ?>) {
+if (receiverId && !<?= $abonnement_en_attente ? 'true' : 'false' ?>) {
     loadMessages();
     setInterval(loadMessages, 3000);
 }
