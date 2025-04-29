@@ -66,8 +66,42 @@ $unread_notifications_count = count($notifications);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .product-img {
-            object-fit: cover;
+            width: 200px;
             height: 200px;
+            align-self: center;
+
+        }/* Styles pour l'image de profil et l'effet de survol */
+        .profile-link {
+            display: inline-block;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-image {
+            transition: transform 0.3s ease, border 0.3s ease;
+            border-radius: 50%; /* Assure-toi que l'image reste circulaire */
+        }
+
+        /* Effet de survol sur l'image */
+        .profile-link:hover .profile-image {
+            transform: scale(1.1); /* Agrandir l'image légèrement */
+            border: 3px solid #28a745; /* Bordure verte lors du survol */
+        }
+
+        /* Affichage du message modifier profil */
+        .profile-link:hover::after {
+            content: 'Modifier Profil';
+            position: absolute;
+            top: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            opacity: 0.8;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -83,6 +117,9 @@ $unread_notifications_count = count($notifications);
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="chat.php"><i class="fas fa-comments"></i> Chat</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="panier.php"><i class="fas fa-basket"></i> Panier</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarNotifications" role="button" data-bs-toggle="dropdown">
@@ -101,6 +138,16 @@ $unread_notifications_count = count($notifications);
                             <li><a class="dropdown-item" href="#">Aucune notification</a></li>
                         <?php endif; ?>
                     </ul>
+                </li>
+                <!-- Image de profil dans la navbar -->
+                <li class="nav-item">
+                    <a href="modifier_profil.php" class="profile-link">
+                        <?php if ($_SESSION['photo']): ?>
+                            <img src="<?= htmlspecialchars($_SESSION['photo']) ?>" alt="Photo de profil" class="profile-image" width="40">
+                        <?php else: ?>
+                            <img src="default-icon.png" alt="Icône de profil par défaut" class="profile-image" width="40">
+                        <?php endif; ?>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="deconnexion.php"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>

@@ -105,5 +105,29 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+    function triggerFileInput() {
+        document.getElementById('photoInput').click();
+    }
+
+    function previewPhoto() {
+        const file = document.getElementById('photoInput').files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const photoPreview = document.getElementById('photoPreview');
+            const defaultIcon = document.getElementById('defaultIcon');
+
+            photoPreview.src = e.target.result;
+            photoPreview.style.display = 'block';
+            defaultIcon.style.display = 'none';
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
 </body>
 </html>

@@ -138,18 +138,17 @@ try {
                         <?php endif; ?>
                     </ul>
                 </li>
-                <!-- Affichage de la photo de profil si l'utilisateur est connecté -->
-                <?php if (isset($_SESSION['id_utilisateur']) && !empty($_SESSION['photo'])): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="modifier_profil.php">
-                            <img src="uploads/<?= htmlspecialchars($_SESSION['photo']); ?>" alt="Photo de profil" class="rounded-circle" width="40" height="40">
-                        </a>
-                    </li>
-                <?php else: ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="connexion.php"><i class="fas fa-user-circle"></i> Connexion</a>
-                    </li>
-                <?php endif; ?>
+                <li class="nav-item"><a class="nav-link" href="panier.php"><i class="fas fa-basket"></i> Panier</a></li>
+                <!-- Image de profil dans la navbar -->
+                <li class="nav-item">
+                    <a href="modifier_profil.php" class="profile-link">
+                        <?php if ($_SESSION['photo']): ?>
+                            <img src="<?= htmlspecialchars($_SESSION['photo']) ?>" alt="Photo de profil" class="profile-image" width="40">
+                        <?php else: ?>
+                            <img src="default-icon.png" alt="Icône de profil par défaut" class="profile-image" width="40">
+                        <?php endif; ?>
+                    </a>
+                </li>
                 <li class="nav-item"><a class="nav-link" href="deconnexion.php"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
             </ul>
         </div>
@@ -161,12 +160,6 @@ try {
     <div class="container">
         <h1 class="display-5">Bienvenue <?= htmlspecialchars($_SESSION['nom']); ?> 👋</h1>
         <p class="lead">Votre espace personnel AgroPastoral</p>
-
-        <?php if ($_SESSION['photo']): ?>
-            <img src="path/to/uploads/<?= htmlspecialchars($_SESSION['photo']); ?>" alt="Photo de profil" class="profile-photo">
-        <?php else: ?>
-            <img src="path/to/default-profile.jpg" alt="Photo de profil par défaut" class="profile-photo">
-        <?php endif; ?>
 
         <?php if ($abonne && $jours_restants !== null): ?>
             <?php if ($jours_restants <= 5): ?>

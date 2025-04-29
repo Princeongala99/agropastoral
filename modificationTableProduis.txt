@@ -1,0 +1,10 @@
+//Ajoute d’abord la colonne seule
+ALTER TABLE produits
+ADD COLUMN id_utilisateur INT;
+// et apres NB: le 24 est id_utilisateur qui existe dans table utilisateur
+UPDATE produits SET id_utilisateur = 24;
+//et On l'ajoute comme cle etrangeur
+ALTER TABLE produits
+ADD CONSTRAINT fk_utilisateur
+FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+ON DELETE CASCADE;
