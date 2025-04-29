@@ -1,10 +1,12 @@
 <?php
 session_start();
 
-// Initialiser le panier s’il n’existe pas
-if (!isset($_SESSION['panier'])) {
-    $_SESSION['panier'] = [];
+// Vérifier que l'utilisateur est connecté
+if (!isset($_SESSION['id_utilisateur'])) {
+    die("Vous devez être connecté pour ajouter un produit au panier.");
 }
+
+$id_acheteur = $_SESSION['id_utilisateur'];
 
 // Connexion à la base de données
 $host = 'localhost';
@@ -23,8 +25,8 @@ try {
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $product_id = (int) $_GET['id'];
 
-    // Récupérer les détails
-    $stmt = $pdo->prepare("SELECT id_produit, nom, description, prix, quantite, image FROM produits WHERE id_produit = :id");
+    // Récupérer les détails du produit + id du propriétaire
+    $stmt = $pdo->prepare("SELECT id_produit, nom, description, prix, quantite, image, id_utilisateur FROM produits WHERE id_produit = :id");
     $stmt->bindParam(':id', $product_id, PDO::PARAM_INT);
     $stmt->execute();
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -34,40 +36,27 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         exit();
     }
 
-    // Ajouter au panier
+    // Ajouter dans la table panier
     if (isset($_POST['ajouter_panier'])) {
         $quantite = (int) ($_POST['quantite'] ?? 1);
 
-        // Si le produit existe déjà dans le panier
-        $trouve = false;
-        foreach ($_SESSION['panier'] as &$item) {
-            if ($item['id'] == $product['id_produit']) {
-                $item['quantite'] += $quantite;
-                $trouve = true;
-                break;
-            }
-        }
+        if ($quantite < 1 || $quantite > $product['quantite']) {
+            echo '<div class="alert alert-warning">Quantité invalide.</div>';
+        } else {
+            $date_ajout = date('Y-m-d H:i:s');
+            $stmt = $pdo->prepare("INSERT INTO panier (id_acheteur, id_produit, quantite, date_ajout, nom_produit) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$id_acheteur, $product['id_produit'], $quantite, $date_ajout, $product['nom']]);
 
-        // Sinon, on l'ajoute
-        if (!$trouve) {
-            $_SESSION['panier'][] = [
-                'id' => $product['id_produit'],
-                'nom' => $product['nom'],
-                'prix' => $product['prix'],
-                'quantite' => $quantite,
-                'image' => $product['image']
-            ];
+            header('Location: panier.php');
+            exit();
         }
-
-        header('Location: panier.php');
-        exit();
     }
-
 } else {
     echo '<div class="alert alert-danger">ID de produit invalide !</div>';
     exit();
 }
 ?>
+
 
 <!-- HTML page -->
 <!DOCTYPE html>
@@ -90,6 +79,16 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 <nav class="navbar navbar-expand-lg navbar-dark bg-success">
     <div class="container">
         <a class="navbar-brand" href="index.php">AgroPastoral</a>
+        <!-- Image de profil dans la navbar -->
+        <li class="nav-item">
+            <a href="modifier_profil.php" class="profile-link">
+                <?php if ($_SESSION['photo']): ?>
+                    <img src="<?= htmlspecialchars($_SESSION['photo']) ?>" alt="Photo de profil" class="profile-image" width="40">
+                <?php else: ?>
+                    <img src="default-icon.png" alt="Icône de profil par défaut" class="profile-image" width="40">
+                <?php endif; ?>
+            </a>
+        </li>
     </div>
 </nav>
 
@@ -98,13 +97,13 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         <img src="<?= htmlspecialchars($product['image']) ?>" class="img-fluid mb-3" style="max-height: 300px; object-fit: cover;">
         <h2><?= htmlspecialchars($product['nom']) ?></h2>
         <p><?= htmlspecialchars($product['description']) ?></p>
-        <p><strong>Prix :</strong> <?= $product['prix'] ?> €</p>
+        <p><strong>Prix :</strong> <?= $product['prix'] ?> FC</p>
         <p><strong>Stock :</strong> <?= $product['quantite'] ?> unités</p>
 
         <form method="POST">
             <div class="mb-3">
                 <label>Quantité</label>
-                <input type="number" name="quantite" class="form-control" min="1" max="<?= $product['quantite'] ?>" value="1">
+                <input type="number" name="quantite" class="form-control" min="1" max="<?= $product['quantite'] ?>" value="1" required>
             </div>
             <a href="acheteur_dashboard.php" class="btn btn-outline-secondary">Retour</a>
             <button type="submit" name="ajouter_panier" class="btn btn-agro">Ajouter au panier</button>
@@ -114,3 +113,4 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
 </body>
 </html>
+

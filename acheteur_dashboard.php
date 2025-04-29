@@ -132,6 +132,9 @@ $unread_notifications_count = count($notifications);
                 <li class="nav-item">
                     <a class="nav-link" href="chat.php"><i class="fas fa-comments"></i> Chat</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="panier.php"><i class="fas fa-basket"></i> Panier</a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarNotifications" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-bell"></i>
@@ -150,9 +153,7 @@ $unread_notifications_count = count($notifications);
                         <?php endif; ?>
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="deconnexion.php"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-                </li>
+                
                 <!-- Image de profil dans la navbar -->
                 <li class="nav-item">
                     <a href="modifier_profil.php" class="profile-link">
@@ -162,6 +163,9 @@ $unread_notifications_count = count($notifications);
                             <img src="default-icon.png" alt="Icône de profil par défaut" class="profile-image" width="40">
                         <?php endif; ?>
                     </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="deconnexion.php"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
                 </li>
             </ul>
         </div>
