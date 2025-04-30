@@ -8,3 +8,6 @@ ALTER TABLE produits
 ADD CONSTRAINT fk_utilisateur
 FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
 ON DELETE CASCADE;
+//pour finir on modifie la table panier on ajoute la colonne nom_produit
+ALTER TABLE panier
+ADD COLUMN nom_produit TEXT;
