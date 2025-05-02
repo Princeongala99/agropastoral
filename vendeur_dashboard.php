@@ -73,6 +73,9 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         .hero-section {
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
@@ -83,51 +86,39 @@ try {
         .dashboard-btn {
             min-width: 250px;
         }
-        /* Styles pour l'image de profil et l'effet de survol */
-        .profile-link {
-            display: inline-block;
-            position: relative;
-            transition: transform 0.3s ease;
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            
         }
-
-        .profile-image {
-            transition: transform 0.3s ease, border 0.3s ease;
-            border-radius: 50%; /* Assure-toi que l'image reste circulaire */
-        }
-
-        /* Effet de survol sur l'image */
-        .profile-link:hover .profile-image {
-            transform: scale(1.1); /* Agrandir l'image légèrement */
-            border: 3px solid #28a745; /* Bordure verte lors du survol */
-        }
-
-        /* Affichage du message modifier profil */
-        .profile-link:hover::after {
-            content: 'Modifier Profil';
-            position: absolute;
-            top: 110%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #28a745;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            opacity: 0.8;
-            white-space: nowrap;
-        }
+        .modal-content {
+    border-radius: 15px;
+  }
+  .modal-backdrop.show {
+    opacity: 0.8;
+  }
     </style>
 </head>
+
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
     <div class="container">
+        
         <a class="navbar-brand" href="#">AgroPastoral</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+            </li>
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalLocalisation">
+  Voir la carte des vendeurs
+</button>
+
                 <!-- Chat et notifications restent accessibles même après déconnexion -->
                 <li class="nav-item"><a class="nav-link" href="chat.php"><i class="fas fa-comments"></i> Chat</a></li>
                 <li class="nav-item dropdown">
@@ -218,36 +209,100 @@ try {
     </div>
 </section>
 
+
 <footer class="text-center bg-light py-3 mt-5">
     <p>&copy; <?= date('Y'); ?> AgroPastoral - Tableau de bord</p>
+    <div class="text-end mb-3">
+    <button class="btn btn-success" onclick="enregistrerPosition()">Enregistrer ma position</button>
+    </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <script>
-    function updateNotifications() {
-        $.ajax({
-            url: 'get_notifications.php',
-            type: 'GET',
-            success: function(data) {
-                const notifications = JSON.parse(data);
-                const unreadCount = notifications.length;
-                $('#notificationBadge').text(unreadCount);
-                const menu = $('#notificationMenu').empty();
-                if (unreadCount > 0) {
-                    notifications.forEach(n => {
-                        menu.append(`<li><a class="dropdown-item" href="#"><strong>${n.titre}:</strong> ${n.message}</a></li>`);
-                    });
-                } else {
-                    menu.append('<li><a class="dropdown-item" href="#">Aucune notification</a></li>');
-                }
-            }
-        });
+    // Carte Leaflet
+    var map = L.map('map').setView([51.505, -0.09], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    function enregistrerPosition() {
+    if (!navigator.geolocation) {
+        alert("La géolocalisation n'est pas supportée par ce navigateur.");
+        return;
     }
 
-    setInterval(updateNotifications, 10000);
-    $(document).ready(updateNotifications);
+    // Demander la position géographique de l'utilisateur
+    navigator.geolocation.getCurrentPosition(function(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        // Afficher la position sur la carte
+        L.marker([latitude, longitude]).addTo(map)
+            .bindPopup("Vous êtes ici !")
+            .openPopup();
+
+        // Envoi de la position au serveur
+        $.ajax({
+            url: 'enregistrer_position.php',
+            method: 'POST',
+            data: {
+                latitude: latitude,
+                longitude: longitude
+            },
+            success: function(response) {
+                console.log("Position enregistrée : " + response);
+                alert("Votre position a été enregistrée avec succès.");
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur d'enregistrement : " + error);
+                alert("Une erreur s'est produite lors de l'enregistrement de la position.");
+            }
+        });
+    }, function(error) {
+        // Gestion des erreurs de géolocalisation
+        alert("Impossible d'obtenir votre position : " + error.message);
+    });
+}
+
+
+    // Récupération des vendeurs pour les afficher sur la carte
+    $.getJSON('recuperer_vendeurs.php', function(vendeurs) {
+        vendeurs.forEach(vendeur => {
+            let produits = vendeur.produits.length ? vendeur.produits.join(", ") : "Aucun produit";
+            let popupContent = `
+                <strong>${vendeur.nom}</strong><br>
+                Produits : ${produits}<br>
+                <a href="chat.php?id=${vendeur.id}" class="btn btn-sm btn-success mt-1">Contacter</a>
+            `;
+            let marker = L.marker([vendeur.latitude, vendeur.longitude])
+              .bindPopup(popupContent);
+            markers.addLayer(marker);
+        });
+        map.addLayer(markers);
+    });
+
+    var markers = L.markerClusterGroup();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- MODALE DE LOCALISATION -->
+<div class="modal fade" id="modalLocalisation" tabindex="-1" aria-labelledby="modalLocalisationLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="modalLocalisationLabel">Localisation des vendeurs</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div id="map" style="height: 500px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 </body>
 </html>

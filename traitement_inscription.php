@@ -42,6 +42,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 
+    if ($_POST['password'] !== $_POST['confirmation_password']) {
+        // Afficher un message d'erreur ou rediriger l'utilisateur
+        echo "Les mots de passe ne correspondent pas.";
+        exit;
+    }
+    
+
     // Requête d'insertion
     $sql = "INSERT INTO utilisateur (nom, email, mot_de_passe_hash, telephone, adresse, role, photo)
             VALUES (:nom, :email, :motdepasse, :telephone, :adresse, :role, :photo)";
